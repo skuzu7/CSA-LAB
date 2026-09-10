@@ -1,5 +1,9 @@
-__pycache__/
+
+*.db
 *.pyc
-.venv/
 .pytest_cache/
+.venv/
+__pycache__/
+remediation/files/
+vulnerable-app/files/
 vulnerable-app/notes.db
