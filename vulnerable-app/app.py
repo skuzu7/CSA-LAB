@@ -1,8 +1,14 @@
 """Intentionally vulnerable demo app — LOCALHOST ONLY.
 
 Do NOT deploy. Do NOT expose to any network. Binds 127.0.0.1 by design.
-Planted flaws (see writeups/): FINDING-001 IDOR, FINDING-002 SQLi, FINDING-003 path traversal.
+Planted flaws (see writeups/):
+  FINDING-001 IDOR on GET /note/<id>
+  FINDING-002 SQL injection on GET /search
+  FINDING-003 path traversal on GET /download
+  FINDING-004 forgeable session token on GET /me (predictable, unsigned)
+  FINDING-005 business-logic flaw on POST /transfer (negative amount)
 """
+import base64
 import os
 import sqlite3
 from flask import Flask, request, jsonify, send_file, abort
@@ -26,6 +32,10 @@ def init_db():
     conn.execute("INSERT INTO notes (owner, title, body) VALUES ('alice', 'shopping', 'buy milk')")
     conn.execute("INSERT INTO notes (owner, title, body) VALUES ('alice', 'todo', 'call dentist')")
     conn.execute("INSERT INTO notes (owner, title, body) VALUES ('bob', 'secret', 'bob private note')")
+    conn.execute("DROP TABLE IF EXISTS accounts")
+    conn.execute("CREATE TABLE accounts (owner TEXT PRIMARY KEY, balance INTEGER)")
+    conn.execute("INSERT INTO accounts (owner, balance) VALUES ('alice', 100)")
+    conn.execute("INSERT INTO accounts (owner, balance) VALUES ('bob', 100)")
     conn.commit()
     conn.close()
     os.makedirs(FILES, exist_ok=True)
@@ -35,8 +45,9 @@ def init_db():
 
 @app.get("/")
 def index():
-    return jsonify({"app": "defensive-security-lab demo (vulnerable by design)", "user": current_user(),
-                    "endpoints": ["GET /note/<id>", "GET /search?q=", "GET /download?f="]})
+    return jsonify({"app": "CSA-LAB demo (vulnerable by design)", "user": current_user(),
+                    "endpoints": ["GET /note/<id>", "GET /search?q=", "GET /download?f=",
+                                  "GET /login?as=", "GET /me", "POST /transfer"]})
 
 
 def current_user():
@@ -73,6 +84,56 @@ def download():
     if not os.path.isfile(path):
         abort(404)
     return send_file(path)
+
+
+@app.get("/login")
+def login():
+    # FINDING-004: token is just base64(username) — unsigned and predictable.
+    user = request.args.get("as", "alice")
+    token = base64.b64encode(user.encode()).decode()
+    return jsonify({"token": token})
+
+
+@app.get("/me")
+def me():
+    # FINDING-004: server trusts a token any client can forge for any user.
+    token = request.headers.get("X-Session-Token", "")
+    try:
+        user = base64.b64decode(token.encode()).decode()
+    except Exception:
+        abort(401)
+    if not user:
+        abort(401)
+    conn = get_db()
+    row = conn.execute("SELECT owner, balance FROM accounts WHERE owner = ?", (user,)).fetchone()
+    conn.close()
+    if row is None:
+        abort(401)
+    return jsonify({"user": row["owner"], "balance": row["balance"]})
+
+
+@app.post("/transfer")
+def transfer():
+    # FINDING-005: amount is never validated as positive, so a negative
+    # transfer pulls funds FROM the destination account (reverse transfer).
+    data = request.get_json(silent=True) or {}
+    src = data.get("from", "alice")
+    dst = data.get("to", "bob")
+    amount = int(data.get("amount", 0))
+    conn = get_db()
+    row = conn.execute("SELECT balance FROM accounts WHERE owner = ?", (src,)).fetchone()
+    if row is None:
+        conn.close()
+        abort(404)
+    if row["balance"] < amount:
+        conn.close()
+        return jsonify({"error": "insufficient funds"}), 400
+    conn.execute("UPDATE accounts SET balance = balance - ? WHERE owner = ?", (amount, src))
+    conn.execute("UPDATE accounts SET balance = balance + ? WHERE owner = ?", (amount, dst))
+    conn.commit()
+    out = {r["owner"]: r["balance"] for r in conn.execute("SELECT owner, balance FROM accounts")}
+    conn.close()
+    return jsonify(out)
 
 
 if __name__ == "__main__":

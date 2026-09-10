@@ -36,9 +36,11 @@ pytest tests/ -v
 
 | ID | Title | Status | Write-up |
 |----|-------|--------|----------|
-| FINDING-001 | Broken object-level authorization (IDOR) in `/note/<id>` | vulnerable (fix in progress) | [writeups/finding-001.md](writeups/finding-001.md) |
-| FINDING-002 | SQL injection in search parameter | vulnerable (fix in progress) | [writeups/finding-002.md](writeups/finding-002.md) |
-| FINDING-003 | Path traversal in file download | vulnerable (fix in progress) | [writeups/finding-003.md](writeups/finding-003.md) |
+| FINDING-001 | Broken object-level authorization (IDOR) in `/note/<id>` | patched, regression-covered | [writeups/finding-001.md](writeups/finding-001.md) |
+| FINDING-002 | SQL injection in search parameter | patched, regression-covered | [writeups/finding-002.md](writeups/finding-002.md) |
+| FINDING-003 | Path traversal in file download | patched, regression-covered | [writeups/finding-003.md](writeups/finding-003.md) |
+| FINDING-004 | Forgeable session token in `/me` | patched, regression-covered | [writeups/finding-004.md](writeups/finding-004.md) |
+| FINDING-005 | Negative-amount transfer reverses funds in `/transfer` | patched, regression-covered | [writeups/finding-005.md](writeups/finding-005.md) |
 
 ## Who / why
 
