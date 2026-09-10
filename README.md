@@ -46,6 +46,8 @@ pytest tests/ -v
 
 Independent developer / defensive security researcher. This lab exists to practice AppSec the auditable way: every flaw has a controlled target I own, a failing test, a minimal patch, and a passing regression test. The emphasis is on the **fix**, not the exploit.
 
+These patterns are applied in production in [freeband-nextjs](https://github.com/skuzu7/freeband-nextjs) — a Next.js/TypeScript app with STRIDE threat model, HMAC-SHA256 sessions with constant-time comparison, and CI security checks.
+
 ## Authorization summary
 
 - Own code + local containers only. No external targets.
