@@ -7,11 +7,14 @@ Planted flaws (see writeups/):
   FINDING-003 path traversal on GET /download
   FINDING-004 forgeable session token on GET /me (predictable, unsigned)
   FINDING-005 business-logic flaw on POST /transfer (negative amount)
+  FINDING-006 SSRF on GET /preview (unrestricted server-side fetch)
 """
 import base64
 import os
 import sqlite3
-from flask import Flask, request, jsonify, send_file, abort
+import urllib.parse
+import urllib.request
+from flask import Flask, request, jsonify, send_file, abort, Response
 
 app = Flask(__name__)
 BASE = os.path.dirname(os.path.abspath(__file__))
@@ -47,7 +50,7 @@ def init_db():
 def index():
     return jsonify({"app": "CSA-LAB demo (vulnerable by design)", "user": current_user(),
                     "endpoints": ["GET /note/<id>", "GET /search?q=", "GET /download?f=",
-                                  "GET /login?as=", "GET /me", "POST /transfer"]})
+                                  "GET /login?as=", "GET /me", "POST /transfer", "GET /preview?url="]})
 
 
 def current_user():
@@ -134,6 +137,26 @@ def transfer():
     out = {r["owner"]: r["balance"] for r in conn.execute("SELECT owner, balance FROM accounts")}
     conn.close()
     return jsonify(out)
+
+
+@app.get("/internal/config")
+def internal_config():
+    # Fixture standing in for link-local-only data (cloud-metadata style).
+    # Synthetic values. Reachable over HTTP only because this demo binds
+    # 127.0.0.1; real metadata endpoints are never touched.
+    return jsonify({"role": "demo-instance-role", "secret": "SSRF-FIXTURE-SECRET"})
+
+
+@app.get("/preview")
+def preview():
+    # FINDING-006: unrestricted server-side fetch. Any URL the lab process
+    # can reach is fetched and returned, including link-local-only routes.
+    target = request.args.get("url", "")
+    try:
+        with urllib.request.urlopen(target, timeout=3) as resp:
+            return Response(resp.read(), content_type="application/json")
+    except Exception as e:
+        abort(400, str(e)[:200])
 
 
 if __name__ == "__main__":

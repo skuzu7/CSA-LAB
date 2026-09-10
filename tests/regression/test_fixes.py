@@ -71,3 +71,19 @@ def test_005_fixed_negative_transfer_rejected():
     assert r.status_code == 200
     assert r.json()["alice"] == before["alice"] - 10
     assert r.json()["bob"] == before["bob"] + 10
+
+
+def test_006_fixed_preview_allowlist():
+    # internal-only route must be refused
+    target = f"{BASE}/internal/config"
+    r = requests.get(f"{BASE}/preview", params={"url": target}, timeout=10)
+    assert r.status_code == 400, r.text
+    assert "SSRF-FIXTURE-SECRET" not in r.text
+    # non-allowlisted host refused
+    r = requests.get(f"{BASE}/preview", params={"url": "http://169.254.169.254/"}, timeout=10)
+    assert r.status_code == 400
+    # allowlisted path still works
+    r = requests.get(f"{BASE}/preview",
+                     params={"url": f"{BASE}/note/1?as=alice"}, timeout=10)
+    assert r.status_code == 200
+    assert "shopping" in r.text

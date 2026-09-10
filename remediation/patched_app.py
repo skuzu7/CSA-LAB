@@ -5,13 +5,16 @@ FINDING-002: parameterized LIKE query (no string interpolation).
 FINDING-003: realpath containment — resolved path must stay inside files/.
 FINDING-004: HMAC-signed session token with constant-time verification.
 FINDING-005: server-side amount validation (positive, bounded, integer).
+FINDING-006: allowlisted server-side fetch (loopback + /note/ paths only).
 """
 import base64
 import hashlib
 import hmac
 import os
 import sqlite3
-from flask import Flask, request, jsonify, send_file, abort
+import urllib.parse
+import urllib.request
+from flask import Flask, request, jsonify, send_file, abort, Response
 
 app = Flask(__name__)
 BASE = os.path.dirname(os.path.abspath(__file__))
@@ -187,6 +190,42 @@ def transfer():
     out = {r["owner"]: r["balance"] for r in conn.execute("SELECT owner, balance FROM accounts")}
     conn.close()
     return jsonify(out)
+
+
+@app.get("/internal/config")
+def internal_config():
+    # Same synthetic fixture as the vulnerable variant. Exists so the
+    # regression suite can prove the patched fetcher refuses to reach it.
+    return jsonify({"role": "demo-instance-role", "secret": "SSRF-FIXTURE-SECRET"})
+
+
+PREVIEW_ALLOW_HOSTS = {"127.0.0.1", "localhost"}
+PREVIEW_ALLOW_PREFIX = "/note/"
+PREVIEW_DENY_SUBSTRINGS = ("169.254.169.254", "metadata", "internal/")
+
+
+@app.get("/preview")
+def preview():
+    # FIX 006: parse first, fetch only what the allowlist permits.
+    target = request.args.get("url", "")
+    try:
+        parts = urllib.parse.urlparse(target)
+    except Exception:
+        return jsonify({"error": "unparseable url"}), 400
+    if parts.scheme != "http":
+        return jsonify({"error": "only http allowed"}), 400
+    if (parts.hostname or "") not in PREVIEW_ALLOW_HOSTS:
+        return jsonify({"error": "host not allowlisted"}), 400
+    if not (parts.path or "").startswith(PREVIEW_ALLOW_PREFIX):
+        return jsonify({"error": "path not allowlisted"}), 400
+    lowered = target.lower()
+    if any(bad in lowered for bad in PREVIEW_DENY_SUBSTRINGS):
+        return jsonify({"error": "blocked pattern"}), 400
+    try:
+        with urllib.request.urlopen(target, timeout=3) as resp:
+            return Response(resp.read(), content_type="application/json")
+    except Exception:
+        return jsonify({"error": "fetch failed"}), 400
 
 
 if __name__ == "__main__":

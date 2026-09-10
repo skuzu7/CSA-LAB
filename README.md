@@ -41,6 +41,7 @@ pytest tests/ -v
 | FINDING-003 | Path traversal in file download | patched, regression-covered | [writeups/finding-003.md](writeups/finding-003.md) |
 | FINDING-004 | Forgeable session token in `/me` | patched, regression-covered | [writeups/finding-004.md](writeups/finding-004.md) |
 | FINDING-005 | Negative-amount transfer reverses funds in `/transfer` | patched, regression-covered | [writeups/finding-005.md](writeups/finding-005.md) |
+| FINDING-006 | Server-side request forgery (SSRF) in `/preview` | patched, regression-covered | [writeups/finding-006.md](writeups/finding-006.md) |
 
 ## Who / why
 
