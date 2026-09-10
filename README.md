@@ -1,4 +1,4 @@
-# defensive-security-lab
+# CSA LAB — Cyber Security Analysis Lab
 
 Reproducible local lab for **vulnerability discovery → controlled validation → remediation → regression testing → documentation**.
 
