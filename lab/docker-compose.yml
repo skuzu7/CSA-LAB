@@ -1,0 +1,11 @@
+services:
+  app:
+    build: ..
+    command: python vulnerable-app/app.py
+    ports:
+      - "127.0.0.1:5000:5000"
+    networks: [labnet]
+    read_only: true
+networks:
+  labnet:
+    driver: bridge

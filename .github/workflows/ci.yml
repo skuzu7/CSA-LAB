@@ -1,0 +1,13 @@
+name: ci
+on: [push, pull_request]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install -r vulnerable-app/requirements.txt
+      - run: LAB_APP_VARIANT=vulnerable python -m pytest tests/security/ -v
+      - run: LAB_APP_VARIANT=patched python -m pytest tests/regression/ -v
