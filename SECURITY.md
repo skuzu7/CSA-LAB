@@ -1,33 +1,31 @@
-# SECURITY.md
+# Security Policy
 
-## Supported versions
+## Supported scope
 
-This is a research lab, not production software. The demo app under `vulnerable-app/` is INTENTIONALLY VULNERABLE — do not deploy it, do not expose it to any network. Security fixes land as `remediation/FINDING-*/` patches with regression tests.
+This repository is a **research and educational laboratory**, not production software. The app in `vulnerable-app/` is intentionally insecure: do not deploy it, connect it to real data, or expose it to a network.
 
 | Component | Status |
-|---|---|
-| `vulnerable-app/` (demo target) | intentionally vulnerable by design |
-| `remediation/` patches | maintained, tested |
-| `lab/` compose | localhost-only |
+| --- | --- |
+| `vulnerable-app/` | Intentionally vulnerable local fixture |
+| `remediation/` | Patched examples documented per finding |
+| `tests/security/` | Controlled reproduction tests |
+| `tests/regression/` | Tests for patched behavior |
+| `lab/` | Isolated local environment |
 
-## Reporting a vulnerability
+The **six planted findings (001–006)** are documented under [`writeups/`](writeups/) and already have accompanying mitigation and regression material. These are educational exercises, not undisclosed vulnerabilities in third-party services.
 
-Found a REAL issue (not one of the planted demo flaws)? Email: **[NECESSÁRIO DO USUÁRIO — security contact email]**.
+## Reporting an unexpected vulnerability
 
-Please include: affected file/commit, steps to reproduce locally, impact assessment, suggested fix. Allow up to 7 days for triage. Do not publish before coordinated disclosure completes.
+Please **do not post secrets, personal information, or live exploit details in a public issue**. If GitHub private vulnerability reporting is enabled, use it. Otherwise contact the maintainer through the [LinkedIn profile](https://br.linkedin.com/in/antonioccjr) linked from [@skuzu7](https://github.com/skuzu7) to arrange private disclosure.
 
-Note: the three documented findings (001–003) are planted lab exercises. Reporting them is unnecessary — their write-ups already contain the fix.
+Include the affected file or commit, a minimal reproduction against your own local clone, impact, and a suggested fix. The maintainer aims to triage reports within seven days; this is a best-effort goal, not a service guarantee.
 
-## Scope
+## Authorized targets and disclosure
 
-In scope: this repository's code and docs. Out of scope: any system running this code outside localhost, any third party, social engineering, DoS testing.
+- In scope: this repository's code and authorized, local instances only.
+- Out of scope: external deployments, third-party services, real user data, social engineering, and denial-of-service tests.
+- The [authorization policy](AUTHORIZATION.md) and [scope inventory](docs/scope.md) are authoritative and must be updated before any new target is included.
+- Coordinated disclosure is preferred for unexpected genuine issues; planted demonstration flaws are public by design.
+- No bounty is offered and no active external bug-bounty program is claimed.
 
-## Disclosure policy
-
-- Coordinated disclosure, 90-day default for real issues in lab tooling.
-- Demo flaws: fully public by design (they only affect the local demo).
-- No bounties offered (individual research project).
-
-## Data protection
-
-No personal data is processed. All fixtures are synthetic. Test traffic never leaves the machine.
+All fixtures are synthetic. The laboratory is designed to operate without handling personal data.
