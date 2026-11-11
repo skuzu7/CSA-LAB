@@ -1,13 +1,33 @@
-name: ci
-on: [push, pull_request]
+name: Local Security Evidence
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: security-evidence-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  test:
+  reproduce-and-regress:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-      - run: pip install -r vulnerable-app/requirements.txt
-      - run: LAB_APP_VARIANT=vulnerable python -m pytest tests/security/ -v
-      - run: LAB_APP_VARIANT=patched python -m pytest tests/regression/ -v
+
+      - name: Install pinned-environment dependencies
+        run: python -m pip install -r vulnerable-app/requirements.txt
+
+      - name: Reproduce planted findings, then validate patched regressions
+        run: python scripts/run_security_suites.py
