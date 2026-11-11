@@ -1,5 +1,6 @@
 name: ci
 on: [push, pull_request]
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -8,6 +9,43 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-      - run: pip install -r vulnerable-app/requirements.txt
-      - run: LAB_APP_VARIANT=vulnerable python -m pytest tests/security/ -v
-      - run: LAB_APP_VARIANT=patched python -m pytest tests/regression/ -v
+      - name: Install test dependencies
+        run: python -m pip install -r vulnerable-app/requirements.txt
+      - name: Verify vulnerable exercises and patched regressions on localhost
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          start_server() {
+            python "$1" > "$RUNNER_TEMP/csa-lab-server.log" 2>&1 &
+            SERVER_PID=$!
+            for attempt in {1..40}; do
+              if curl --silent --fail http://127.0.0.1:5000/ > /dev/null; then
+                return 0
+              fi
+              if ! kill -0 "$SERVER_PID" 2>/dev/null; then
+                break
+              fi
+              sleep 0.25
+            done
+            cat "$RUNNER_TEMP/csa-lab-server.log"
+            return 1
+          }
+
+          stop_server() {
+            if [[ -n "${SERVER_PID:-}" ]]; then
+              kill "$SERVER_PID" 2>/dev/null || true
+              wait "$SERVER_PID" 2>/dev/null || true
+              SERVER_PID=""
+            fi
+          }
+          trap stop_server EXIT
+
+          # These tests intentionally confirm the planted flaws in a local fixture.
+          start_server vulnerable-app/app.py
+          python -m pytest tests/security/ -v
+
+          stop_server
+          # Test each remediation against a freshly initialized patched fixture.
+          start_server remediation/patched_app.py
+          python -m pytest tests/regression/ -v
