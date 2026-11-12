@@ -1,57 +1,62 @@
 # CSA LAB — Cyber Security Analysis Lab
 
-Reproducible local lab for **vulnerability discovery → controlled validation → remediation → regression testing → documentation**.
+A **localhost-only application-security lab** showing a complete, inspectable defensive workflow:
+scope and authorization → reproducible weakness → root cause → minimal patch → regression test.
 
-All testing targets software we own, deliberately-vulnerable apps run locally, or educational labs/CTFs within their rules. No third-party systems. See [AUTHORIZATION.md](AUTHORIZATION.md).
+**Important:** The vulnerabilities are planted educational fixtures. They are **not** third-party findings, CVEs, bug-bounty awards, or evidence of a professional penetration-testing engagement.
 
-## Quick start (Windows / Linux)
+## Reproduce all six cases (Windows, macOS or Linux)
+
+Requires Python 3.11+.
 
 ```bash
-cd vulnerable-app
+git clone https://github.com/skuzu7/CSA-LAB.git
+cd CSA-LAB
 python -m venv .venv
-# windows: .venv/Scripts/activate | linux: source .venv/bin/activate
-pip install -r requirements.txt
-python app.py
-# http://127.0.0.1:5000
+# Activate with .venv/Scripts/activate (Windows) or source .venv/bin/activate (macOS/Linux)
+python -m pip install -r vulnerable-app/requirements.txt
+python scripts/run_security_suites.py
 ```
 
-Run tests:
+The runner checks that port 5000 is free, starts the **intentionally vulnerable** Flask app on `127.0.0.1:5000`, runs the six controlled demonstrations, stops it, starts the **patched** app on the same loopback address, and runs the six regression tests. It fails closed if the fixture does not start or a test fails. See [CI](.github/workflows/ci.yml).
 
-```bash
-pip install pytest
-pytest tests/ -v
-```
+The `tests/security/` suite **passes when the planted weaknesses are reproduced**; the `tests/regression/` suite **passes when the patched app prevents those weaknesses and retains legitimate behavior**. Do not run both suites against one server variant.
 
-## Structure
+These are code-level assertions, not a claim of formal third-party review. To verify results yourself, run the commands above or inspect the [GitHub Actions history](../../actions).
 
-- `vulnerable-app/` — intentionally vulnerable demo app (Flask, SQLite, local only). Binds 127.0.0.1 by default.
-- `lab/` — Docker Compose for isolated local network (app + optional db).
-- `tests/security/` — proof-of-concept checks that FAIL on vulnerable code, PASS after fix.
-- `tests/regression/` — post-fix regression suite.
-- `remediation/` — patches, one folder per finding.
-- `writeups/` — one file per finding: context, threat model, cause, authorized reproduction, impact, evidence, remediation, patch, regression test, lessons.
-- `docs/` — methodology, scope, responsible-use, threat-model.
+## Findings and evidence
 
-## Findings
+| Finding | Weakness demonstrated in the local fixture | Evidence |
+| --- | --- | --- |
+| 001 | Broken object-level authorization / IDOR | [Write-up](writeups/finding-001.md) |
+| 002 | SQL injection | [Write-up](writeups/finding-002.md) |
+| 003 | Path traversal | [Write-up](writeups/finding-003.md) |
+| 004 | Forgeable session token | [Write-up](writeups/finding-004.md) |
+| 005 | Negative-amount transfer logic | [Write-up](writeups/finding-005.md) |
+| 006 | Server-side request forgery (SSRF) | [Write-up](writeups/finding-006.md) |
 
-| ID | Title | Status | Write-up |
-|----|-------|--------|----------|
-| FINDING-001 | Broken object-level authorization (IDOR) in `/note/<id>` | patched, regression-covered | [writeups/finding-001.md](writeups/finding-001.md) |
-| FINDING-002 | SQL injection in search parameter | patched, regression-covered | [writeups/finding-002.md](writeups/finding-002.md) |
-| FINDING-003 | Path traversal in file download | patched, regression-covered | [writeups/finding-003.md](writeups/finding-003.md) |
-| FINDING-004 | Forgeable session token in `/me` | patched, regression-covered | [writeups/finding-004.md](writeups/finding-004.md) |
-| FINDING-005 | Negative-amount transfer reverses funds in `/transfer` | patched, regression-covered | [writeups/finding-005.md](writeups/finding-005.md) |
-| FINDING-006 | Server-side request forgery (SSRF) in `/preview` | patched, regression-covered | [writeups/finding-006.md](writeups/finding-006.md) |
+Each write-up explains the threat boundary, cause, local reproduction, patch, residual limitations and regression behavior. The exact assertions are in [planted-finding tests](tests/security/test_findings_vulnerable.py) and [patch regression tests](tests/regression/test_fixes.py).
 
-## Who / why
+## Repository structure
 
-Independent developer / defensive security researcher. This lab exists to practice AppSec the auditable way: every flaw has a controlled target I own, a failing test, a minimal patch, and a passing regression test. The emphasis is on the **fix**, not the exploit.
+- `vulnerable-app/`: intentionally insecure Flask+SQLite service, bound to loopback
+- `remediation/patched_app.py`: remediated equivalent fixture
+- `scripts/run_security_suites.py`: local/CI test orchestration and process teardown
+- `tests/security/`: six positive demonstrations of planted weaknesses
+- `tests/regression/`: six checks of defensive behavior after the patch
+- `writeups/`: individual evidence reports
+- `lab/`: optional Docker tooling
+- `docs/`: boundaries, threat model, research methodology
 
-These patterns are applied in production in [freeband-nextjs](https://github.com/skuzu7/freeband-nextjs) — a Next.js/TypeScript app with STRIDE threat model, HMAC-SHA256 sessions with constant-time comparison, and CI security checks.
+## Authorized boundaries
 
-## Authorization summary
+- Testing is restricted to owned local fixtures or explicitly permitted educational environments.
+- Never expose `vulnerable-app/` to the internet or connect real data.
+- No active external bug bounty is claimed.
+- Do not scan, exploit, or access third-party systems without explicit authorization.
 
-- Own code + local containers only. No external targets.
-- CTF/Academy labs only under provider ToS.
-- Bug bounty only inside program scope (none active at this time).
-- Full statement: [AUTHORIZATION.md](AUTHORIZATION.md). Disclosure policy: [SECURITY.md](SECURITY.md).
+The definitive rules are in [AUTHORIZATION.md](AUTHORIZATION.md), the [scope inventory](docs/scope.md) and [SECURITY.md](SECURITY.md).
+
+## Applied defensive engineering
+
+The [freeband-nextjs](https://github.com/skuzu7/freeband-nextjs) project contains a separate first-party authentication/session [security review](https://github.com/skuzu7/freeband-nextjs/blob/main/SECURITY_REVIEW.md), [STRIDE threat model](https://github.com/skuzu7/freeband-nextjs/blob/main/docs/THREAT_MODEL.md) and CI workflow. It is an applied engineering case, not a claim of an externally accepted vulnerability disclosure.
