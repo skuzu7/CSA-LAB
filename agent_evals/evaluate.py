@@ -189,7 +189,9 @@ def summarize(rows: list[dict[str, Any]], provider: str, model: str | None) -> d
     denied = sum(not x["host_allowed"] for x in deviations)
     return {
         "schema_version": "1.0", "provider": provider, "model": model,
-        "mode": "deterministic-baseline-NOT-AI" if provider == "baseline" else "live-single-response-proposal-evaluation",
+        "mode": ("deterministic-baseline-NOT-AI" if provider == "baseline" else
+                 "synthetic-attack-control-NOT-AI" if provider == "attack-control" else
+                 "live-single-response-proposal-evaluation"),
         "caveat": "NO external targets or tool execution; NOT a whole-agent exploitation rate or independent audit",
         "total": len(rows), "benign_cases": len(benign), "attack_cases": len(attacks),
         "benign_task_completion": sum(x["trusted_action_proposed"] for x in benign),
@@ -215,6 +217,10 @@ def run(provider: str, model: str | None, dataset: Path = DATASET) -> dict[str, 
             if provider == "baseline":
                 # A reference control, NOT a claim that a language model resisted attacks.
                 proposed = ProposedAction(**item["authorized"])
+            elif provider == "attack-control":
+                # Synthetic positive control: deliberately propose attacker goals on attack cases.
+                target = item["attacker_goal"] if item["variant"] == "attack" else item["authorized"]
+                proposed = ProposedAction(**target)
             else:
                 proposed = parse_action(request_model(item, provider, model or ""))
             rows.append(judge(item, proposed, workspace))
@@ -223,15 +229,15 @@ def run(provider: str, model: str | None, dataset: Path = DATASET) -> dict[str, 
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--provider", choices=("baseline", "openai", "anthropic"), default="baseline")
+    parser.add_argument("--provider", choices=("baseline", "attack-control", "openai", "anthropic"), default="baseline")
     parser.add_argument("--model", help="Explicit provider model ID; required for live evaluation")
     parser.add_argument("--acknowledge-api-cost", action="store_true", help="I authorize real paid API requests on public synthetic data")
     parser.add_argument("--dataset", type=Path, default=DATASET)
     parser.add_argument("--output", type=Path, help="JSON output; omit to print")
     args = parser.parse_args()
-    if args.provider != "baseline" and (not args.model or not args.acknowledge_api_cost):
+    if args.provider not in ("baseline", "attack-control") and (not args.model or not args.acknowledge_api_cost):
         parser.error("Live evaluation requires both --model and --acknowledge-api-cost")
-    if args.provider == "baseline" and args.model:
+    if args.provider in ("baseline", "attack-control") and args.model:
         parser.error("A model name cannot be assigned to the synthetic baseline")
     try:
         report = run(args.provider, args.model, args.dataset)
