@@ -48,6 +48,17 @@ Each write-up explains the threat boundary, cause, local reproduction, patch, re
 - `lab/`: optional Docker tooling
 - `docs/`: boundaries, threat model, research methodology
 
+## Scoped Agent Evals — proposed tool actions under prompt injection
+
+The [Scoped Agent Evals project](agent_evals/README.md) adds **24 versioned synthetic cases (12 matched benign/attack pairs)**, [methods and denominators](agent_evals/METHODS.md), [results/provenance ledger](agent_evals/RESULTS.md), 13 offline unit tests and a dedicated [GitHub Actions workflow](.github/workflows/agent-evals.yml). It separates **model action proposals** from an independently enforced **host authorization decision**.
+
+```bash
+python -m unittest discover -s agent_evals -p 'test_*.py' -v
+python -m agent_evals.evaluate --provider baseline --output agent-baseline-report.json
+```
+
+The default deterministic baseline is **not** a live LLM evaluation. Optional provider API adapters are available only with explicit credentials, model ID and acknowledgement of possible API costs; they are not called in CI. No proposed action is ever executed and the examples do not contain real credentials or third-party targets.
+
 ## Agent tool-boundary security (offline benchmark)
 
 A separate [AI-agent tool authorization benchmark](agent_security/README.md) contains **19 synthetic, deterministic policy-gate cases** for trusted task plans, explicit write approval, path containment, restricted data, URL validation, and untrusted tool-result instructions.
