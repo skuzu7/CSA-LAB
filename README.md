@@ -48,6 +48,16 @@ Each write-up explains the threat boundary, cause, local reproduction, patch, re
 - `lab/`: optional Docker tooling
 - `docs/`: boundaries, threat model, research methodology
 
+## Agent tool-boundary security (offline benchmark)
+
+A separate [AI-agent tool authorization benchmark](agent_security/README.md) contains **19 synthetic, deterministic policy-gate cases** for trusted task plans, explicit write approval, path containment, restricted data, URL validation, and untrusted tool-result instructions.
+
+```bash
+python agent_security/offline_benchmark.py --json
+```
+
+CI publishes a machine-readable case report as a workflow artifact. **This is not an LLM/prompt-injection robustness evaluation**: no real model is called, no commands are executed, and no external network requests occur. The tests evaluate a small host-enforced policy boundary only.
+
 ## Authorized boundaries
 
 - Testing is restricted to owned local fixtures or explicitly permitted educational environments.
