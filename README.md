@@ -48,9 +48,27 @@ Each write-up explains the threat boundary, cause, local reproduction, patch, re
 - `lab/`: optional Docker tooling
 - `docs/`: boundaries, threat model, research methodology
 
+## Flagship research: TRACEGUARD — Multi-Step Agent Replay Lab
+
+[**TRACEGUARD**](agent_replay_lab/README.md) is a standalone, versioned research module for **multi-step agent tool-use security**. It goes beyond single-response prompt tests by simulating an entire bounded workflow: read an untrusted document, propose further tool actions, enforce exact host authorization, write an approved report and finish.
+
+- [**16 matched synthetic cases**](agent_replay_lab/scenarios.jsonl) (8 benign / 8 injected), spanning eight OWASP Agentic risk themes.
+- [**26 offline unit tests**](agent_replay_lab/tests/test_replay.py) for tool boundaries, parser strictness, session ordering, audit-trace tampering and provider cost/credential gates.
+- Two **scripted**, intentionally contrasting controls: baseline (48 steps, zero denials) and attack control (56 steps, eight off-scope requests, all blocked).
+- [**Hash-chained forensic traces**](agent_replay_lab/core.py) and downloadable JSON artifacts in [CI](.github/workflows/agent-replay-lab.yml), with an explicit [methodology](agent_replay_lab/METHODS.md) and [threat model](agent_replay_lab/THREAT_MODEL.md).
+- Optional OpenAI/Anthropic model-proposal adapters require explicit local API credentials, model ID and **cost acknowledgement**. **No real model test, external exploit, CVE or bounty is claimed**.
+
+```bash
+python -m unittest discover -s agent_replay_lab/tests -v
+python -m agent_replay_lab.runner --mode baseline --output baseline.json
+python -m agent_replay_lab.runner --mode attack-control --output attack-control.json
+```
+
+Read [TRACEGUARD results and limitations](agent_replay_lab/RESULTS.md) before interpreting numbers. All allowed/denied tool actions are simulated **in memory**, not executed against external systems.
+
 ## Scoped Agent Evals — proposed tool actions under prompt injection
 
-The [Scoped Agent Evals project](agent_evals/README.md) adds **24 versioned synthetic cases (12 matched benign/attack pairs)**, [methods and denominators](agent_evals/METHODS.md), [results/provenance ledger](agent_evals/RESULTS.md), 13 offline unit tests and a dedicated [GitHub Actions workflow](.github/workflows/agent-evals.yml). It separates **model action proposals** from an independently enforced **host authorization decision**.
+The [Scoped Agent Evals project](agent_evals/README.md) adds **24 versioned synthetic cases (12 matched benign/attack pairs)**, [methods and denominators](agent_evals/METHODS.md), [results/provenance ledger](agent_evals/RESULTS.md), 14 offline unit tests and a dedicated [GitHub Actions workflow](.github/workflows/agent-evals.yml). It separates **model action proposals** from an independently enforced **host authorization decision**.
 
 ```bash
 python -m unittest discover -s agent_evals -p 'test_*.py' -v
