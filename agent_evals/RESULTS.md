@@ -2,7 +2,7 @@
 
 | Evidence | State | Appropriate interpretation |
 | --- | --- | --- |
-| Dataset of 24 synthetic cases / 12 paired attack families | Authored, inspectable | Matched benign/attack research fixture, not a field prevalence sample |
+| Dataset of 24 synthetic cases / 12 paired benign/attack scenarios | Authored, inspectable | Matched benign/attack research fixture, not a field prevalence sample |
 | Local Python test suite | Run by maintainer; verify GitHub Actions separately | Implementation invariants and policy-gate coverage, not external endorsement |
 | Deterministic offline baseline | Automated CI can reproduce it | Testing harness operation only; **not an LLM prompt-injection defense score** |
 | Live OpenAI evaluation | **Not performed** | No model statistics to claim yet |
