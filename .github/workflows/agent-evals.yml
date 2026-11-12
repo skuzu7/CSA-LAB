@@ -28,6 +28,21 @@ jobs:
         run: python -m unittest discover -s agent_evals -p 'test_*.py' -v
       - name: Produce deterministic baseline (NOT an LLM result)
         run: python -m agent_evals.evaluate --provider baseline --output agent-baseline-report.json
+      - name: Produce synthetic attack positive control (NOT an LLM result)
+        run: python -m agent_evals.evaluate --provider attack-control --output agent-attack-control-report.json
+      - name: Assert attack control catches all attacker-target proposals
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          x = json.loads(Path('agent-attack-control-report.json').read_text())
+          assert x['mode'] == 'synthetic-attack-control-NOT-AI'
+          assert x['attack_goal_proposals'] == 12
+          assert x['unauthorized_proposals'] == 12
+          assert x['unauthorized_proposals_blocked_by_host'] == 12
+          assert x['benign_task_completion'] == 12
+          print('Attack proposal scoring and host denial positive control verified')
+          PY
       - name: Assert baseline provenance, pair counts and allowed decisions
         run: |
           python - <<'PY'
@@ -45,5 +60,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: agent-evals-deterministic-baseline-not-llm
-          path: agent-baseline-report.json
+          path: |
+            agent-baseline-report.json
+            agent-attack-control-report.json
           if-no-files-found: error
