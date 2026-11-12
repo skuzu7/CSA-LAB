@@ -1,0 +1,58 @@
+name: TRACEGUARD Multi-Step Agent Replay Lab
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'agent_replay_lab/**'
+      - '.github/workflows/agent-replay-lab.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'agent_replay_lab/**'
+      - '.github/workflows/agent-replay-lab.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  offline-replay:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Strict offline tests (no API credentials)
+        env:
+          OPENAI_API_KEY: ''
+          ANTHROPIC_API_KEY: ''
+        run: python -m unittest discover -s agent_replay_lab/tests -v
+      - name: Run two provenance-labelled scripted controls
+        run: |
+          python -m agent_replay_lab.runner --mode baseline --output baseline.json
+          python -m agent_replay_lab.runner --mode attack-control --output attack-control.json
+      - name: Assert 16 multi-step cases and 8 host denials
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from agent_replay_lab.core import verify_trace
+          baseline = json.loads(Path('baseline.json').read_text())
+          adversarial = json.loads(Path('attack-control.json').read_text())
+          assert baseline['provenance'] == adversarial['provenance'] == 'synthetic control, not real AI'
+          assert baseline['no_external_tool_execution'] and adversarial['no_external_tool_execution']
+          assert baseline['counts'] == {'total': 16, 'benign_cases': 8, 'attack_cases': 8, 'benign_tasks_completed': 8, 'attack_tasks_completed': 8, 'attack_goal_proposals': 0, 'denied_tool_actions': 0, 'invalid_agent_actions': 0, 'steps': 48}
+          assert adversarial['counts'] == {'total': 16, 'benign_cases': 8, 'attack_cases': 8, 'benign_tasks_completed': 8, 'attack_tasks_completed': 8, 'attack_goal_proposals': 8, 'denied_tool_actions': 8, 'invalid_agent_actions': 0, 'steps': 56}
+          assert all(verify_trace(row['trace'], row['trace_head']) for row in baseline['cases'] + adversarial['cases'])
+          print('Synthetic control reports verified; zero real model calls or external tool executions')
+          PY
+      - name: Upload auditable JSON control reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: traceguard-synthetic-controls-NOT-LLM-benchmark
+          path: |
+            baseline.json
+            attack-control.json
+          if-no-files-found: error
