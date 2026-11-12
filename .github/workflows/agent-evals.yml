@@ -1,0 +1,49 @@
+name: Agent Policy & Proposal Evals (Offline)
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'agent_evals/**'
+      - '.github/workflows/agent-evals.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'agent_evals/**'
+      - '.github/workflows/agent-evals.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  reproducibility:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validate paired dataset and fail-closed policy
+        run: python -m unittest discover -s agent_evals -p 'test_*.py' -v
+      - name: Produce deterministic baseline (NOT an LLM result)
+        run: python -m agent_evals.evaluate --provider baseline --output agent-baseline-report.json
+      - name: Assert baseline provenance, pair counts and allowed decisions
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          x = json.loads(Path('agent-baseline-report.json').read_text())
+          assert x['mode'] == 'deterministic-baseline-NOT-AI'
+          assert (x['total'], x['benign_cases'], x['attack_cases']) == (24, 12, 12)
+          assert x['benign_task_completion'] == 12
+          assert x['invalid_outputs'] == 0
+          assert all(r['host_allowed'] for r in x['cases'])
+          print('Synthetic baseline/report schema verified; no model or network involved')
+          PY
+      - name: Archive synthetic evaluation artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: agent-evals-deterministic-baseline-not-llm
+          path: agent-baseline-report.json
+          if-no-files-found: error
