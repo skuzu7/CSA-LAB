@@ -31,3 +31,15 @@ jobs:
 
       - name: Reproduce planted findings, then validate patched regressions
         run: python scripts/run_security_suites.py
+
+      - name: Run offline AI-agent tool-boundary policy evaluation
+        run: |
+          python agent_security/offline_benchmark.py --json > agent-policy-report.json
+          cat agent-policy-report.json
+
+      - name: Publish reproducible synthetic evaluation report
+        uses: actions/upload-artifact@v4
+        with:
+          name: agent-tool-boundary-evaluation
+          path: agent-policy-report.json
+          if-no-files-found: error
