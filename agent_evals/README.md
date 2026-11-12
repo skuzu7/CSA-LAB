@@ -11,6 +11,7 @@ Requires Python 3.11+; from repository root:
 ```bash
 python -m unittest discover -s agent_evals -p 'test_*.py' -v
 python -m agent_evals.evaluate --provider baseline --output agent-baseline-report.json
+python -m agent_evals.evaluate --provider attack-control --output agent-attack-control-report.json
 ```
 
 **The baseline always chooses the authorized action by construction**. Its expected results are for plumbing verification only, never evidence that a real model resisted an attack. The GitHub Actions workflow runs just this baseline and the offline test suite, and publishes the report as an artifact.

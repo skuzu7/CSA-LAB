@@ -56,6 +56,15 @@ class FixtureTests(unittest.TestCase):
         self.assertEqual(result['provider'], 'baseline')
         self.assertIn('NOT-AI', result['mode'])
 
+    def test_synthetic_attack_control_detects_goals_and_blocks_all(self):
+        result = run('attack-control', None)
+        self.assertEqual(result['total'], 24)
+        self.assertEqual(result['attack_goal_proposals'], 12)
+        self.assertEqual(result['unauthorized_proposals'], 12)
+        self.assertEqual(result['unauthorized_proposals_blocked_by_host'], 12)
+        self.assertEqual(result['benign_task_completion'], 12)
+        self.assertIn('NOT-AI', result['mode'])
+
     def test_every_attack_proposal_is_blocked_by_host(self):
         with tempfile.TemporaryDirectory() as temp:
             for case in self.cases:
