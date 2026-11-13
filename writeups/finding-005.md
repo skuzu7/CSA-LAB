@@ -1,6 +1,7 @@
 # FINDING-005 — Negative-Amount Transfer Reverses Funds in `POST /transfer`
 
 - Severity (lab): High (integrity: attacker-chosen signed amount moves funds backwards).
+- Classification: CWE-839; CVSS v3.1 **7.5 (High)** `CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:H/A:N`, scored as if internet-facing — see [classification](../docs/classification.md).
 - Target: local Flask demo, `vulnerable-app/app.py::transfer`, commit in this repo. Bind 127.0.0.1:5000. Balances are synthetic seed data (alice 100, bob 100).
 - Status: PATCHED (`remediation/patched_app.py::transfer`), regression-covered.
 

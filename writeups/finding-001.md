@@ -1,6 +1,7 @@
 # FINDING-001 — Broken Object-Level Authorization (IDOR) in `GET /note/<id>`
 
 - Severity (lab): High (confidentiality: any demo user reads any note).
+- Classification: CWE-639; CVSS v3.1 **6.5 (Medium)** `CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:H/I:N/A:N`, scored as if internet-facing — see [classification](../docs/classification.md).
 - Target: local Flask demo, `vulnerable-app/app.py::get_note`, commit in this repo. Bind 127.0.0.1:5000. Seed users alice/bob are fictional.
 - Status: PATCHED (`remediation/patched_app.py::get_note`), regression-covered.
 

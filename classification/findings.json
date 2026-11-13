@@ -1,0 +1,95 @@
+{
+  "scoring_assumption": "Scores describe the same defect in an internet-reachable deployment of this application. The fixture itself binds 127.0.0.1 and holds synthetic data, so its real-world risk is nil; the numbers show how the weakness class would be rated, not what was at stake here.",
+  "findings": [
+    {
+      "id": "001",
+      "title": "Broken object-level authorization (IDOR) on GET /note/{id}",
+      "cwe": ["CWE-639"],
+      "owasp": ["A01:2025", "API1:2023"],
+      "attack": [{"tactic": "Collection", "id": "T1213", "name": "Data from Information Repositories"}],
+      "cvss": "CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:H/I:N/A:N",
+      "cvss_rationale": "Requires any authenticated account (PR:L); discloses every other user's notes (C:H); no write or outage.",
+      "poc": "tests/security/test_findings_vulnerable.py::test_001_idor_bob_note_readable_by_alice",
+      "regression": "tests/regression/test_fixes.py::test_001_fixed_idor_forbidden",
+      "detection": "detections/rules/csa_001_cross_owner_object_access.yml",
+      "mitigations": ["M1013"]
+    },
+    {
+      "id": "002",
+      "title": "SQL injection on GET /search",
+      "cwe": ["CWE-89"],
+      "owasp": ["A05:2025"],
+      "attack": [{"tactic": "Initial Access", "id": "T1190", "name": "Exploit Public-Facing Application"}],
+      "cvss": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N",
+      "cvss_rationale": "No authentication on the endpoint (PR:N); a single SELECT is injectable, so database contents are readable (C:H). sqlite3.execute() runs one statement, so stacked writes are not reachable through this sink (I:N).",
+      "poc": "tests/security/test_findings_vulnerable.py::test_002_search_sqli_returns_all_rows",
+      "regression": "tests/regression/test_fixes.py::test_002_fixed_sqli_neutralized",
+      "detection": "detections/rules/csa_002_sql_injection_search.yml",
+      "mitigations": ["M1013", "M1050"]
+    },
+    {
+      "id": "003",
+      "title": "Path traversal on GET /download",
+      "cwe": ["CWE-22"],
+      "owasp": ["A01:2025"],
+      "attack": [
+        {"tactic": "Initial Access", "id": "T1190", "name": "Exploit Public-Facing Application"},
+        {"tactic": "Collection", "id": "T1005", "name": "Data from Local System"}
+      ],
+      "cvss": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N",
+      "cvss_rationale": "Unauthenticated read of any file the service account can read, including application source (C:H); read-only primitive.",
+      "poc": "tests/security/test_findings_vulnerable.py::test_003_download_traversal_leaks_source",
+      "regression": "tests/regression/test_fixes.py::test_003_fixed_traversal_blocked",
+      "detection": "detections/rules/csa_003_path_traversal_download.yml",
+      "mitigations": ["M1013", "M1050"]
+    },
+    {
+      "id": "004",
+      "title": "Forgeable session token on GET /me",
+      "cwe": ["CWE-287", "CWE-565"],
+      "owasp": ["A07:2025", "API2:2023"],
+      "attack": [{"tactic": "Credential Access", "id": "T1606.001", "name": "Forge Web Credentials: Web Cookies"}],
+      "cvss": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N",
+      "cvss_rationale": "Any client can mint a valid token for any user without credentials (PR:N). In this fixture the token only gates a read endpoint, so impact is scored C:H/I:N; a token that also gated writes would add I:H and score 9.1.",
+      "poc": "tests/security/test_findings_vulnerable.py::test_004_session_token_is_forgeable",
+      "regression": "tests/regression/test_fixes.py::test_004_fixed_session_token_not_forgeable",
+      "detection": "detections/rules/csa_004_forged_session_token.yml",
+      "mitigations": ["M1013"]
+    },
+    {
+      "id": "005",
+      "title": "Negative-amount transfer on POST /transfer",
+      "cwe": ["CWE-839"],
+      "owasp": ["A06:2025"],
+      "attack": [{"tactic": "Impact", "id": "T1565.001", "name": "Data Manipulation: Stored Data Manipulation"}],
+      "cvss": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:H/A:N",
+      "cvss_rationale": "The endpoint accepts the source account from the request body with no session (PR:N); a negative amount moves funds out of the destination account (I:H); no disclosure or outage.",
+      "poc": "tests/security/test_findings_vulnerable.py::test_005_negative_transfer_reverses_funds",
+      "regression": "tests/regression/test_fixes.py::test_005_fixed_negative_transfer_rejected",
+      "detection": "detections/rules/csa_005_negative_amount_transfer.yml",
+      "mitigations": ["M1013"]
+    },
+    {
+      "id": "006",
+      "title": "Server-side request forgery on GET /preview",
+      "cwe": ["CWE-918"],
+      "owasp": ["A01:2025", "API7:2023"],
+      "attack": [
+        {"tactic": "Initial Access", "id": "T1190", "name": "Exploit Public-Facing Application"},
+        {"tactic": "Credential Access", "id": "T1552.005", "name": "Unsecured Credentials: Cloud Instance Metadata API"}
+      ],
+      "cvss": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:N/A:N",
+      "cvss_rationale": "Unauthenticated (PR:N); the vulnerable component is the web app but the data exposed belongs to other internal services reachable from it, which is a scope change (S:C); response bodies are returned to the caller (C:H).",
+      "poc": "tests/security/test_findings_vulnerable.py::test_006_ssrf_preview_reaches_internal_config",
+      "regression": "tests/regression/test_fixes.py::test_006_fixed_preview_allowlist",
+      "detection": "detections/rules/csa_006_ssrf_internal_destination.yml",
+      "mitigations": ["M1013", "M1030", "M1037"]
+    }
+  ],
+  "mitigation_names": {
+    "M1013": "Application Developer Guidance",
+    "M1030": "Network Segmentation",
+    "M1037": "Filter Network Traffic",
+    "M1050": "Exploit Protection"
+  }
+}

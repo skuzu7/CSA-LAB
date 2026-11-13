@@ -1,6 +1,7 @@
 # FINDING-004 — Forgeable Session Token in `GET /me`
 
 - Severity (lab): High (authentication bypass: any demo account impersonated with zero credentials).
+- Classification: CWE-287, CWE-565; CVSS v3.1 **7.5 (High)** `CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N`, scored as if internet-facing — see [classification](../docs/classification.md).
 - Target: local Flask demo, `vulnerable-app/app.py::login` + `::me`, commit in this repo. Bind 127.0.0.1:5000. Seed users alice/bob are fictional.
 - Status: PATCHED (`remediation/patched_app.py::_sign` / `_verify`), regression-covered.
 

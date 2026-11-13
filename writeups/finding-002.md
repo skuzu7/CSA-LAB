@@ -1,6 +1,7 @@
 # FINDING-002 — SQL Injection in `GET /search?q=`
 
 - Severity (lab): High (full demo table readable, query logic subvertible).
+- Classification: CWE-89; CVSS v3.1 **7.5 (High)** `CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N`, scored as if internet-facing — see [classification](../docs/classification.md).
 - Target: local Flask demo, `vulnerable-app/app.py::search`. SQLite on localhost.
 - Status: PATCHED (`remediation/patched_app.py::search`), regression-covered.
 

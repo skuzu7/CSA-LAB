@@ -1,6 +1,7 @@
 # FINDING-003 — Path Traversal in `GET /download?f=`
 
 - Severity (lab): High (arbitrary local file read as the app user).
+- Classification: CWE-22; CVSS v3.1 **7.5 (High)** `CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N`, scored as if internet-facing — see [classification](../docs/classification.md).
 - Target: local Flask demo, `vulnerable-app/app.py::download`. Serves `files/`.
 - Status: PATCHED (`remediation/patched_app.py::download`), regression-covered.
 
