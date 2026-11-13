@@ -1,0 +1,24 @@
+{
+  "grants": [
+    {
+      "actor": "analyst",
+      "tool": "repo",
+      "action": "read",
+      "resource": "repo://owner/lab/docs/"
+    },
+    {
+      "actor": "analyst",
+      "tool": "repo",
+      "action": "delete",
+      "resource": "repo://owner/lab/docs/"
+    }
+  ],
+  "approvals": {
+    "human-approve-17": {
+      "actor": "analyst",
+      "tool": "repo",
+      "action": "delete",
+      "resource": "repo://owner/lab/docs/stale.md"
+    }
+  }
+}
