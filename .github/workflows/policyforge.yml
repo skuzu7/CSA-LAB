@@ -1,0 +1,35 @@
+name: PolicyForge offline capability evaluation
+on:
+  pull_request:
+    paths:
+      - 'policyforge/**'
+      - '.github/workflows/policyforge.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'policyforge/**'
+      - '.github/workflows/policyforge.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  evaluate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Compile policy modules
+        run: python -m compileall -q policyforge
+      - name: Authorization and benchmark regression tests
+        run: python -m unittest discover -s policyforge/tests -p 'test_*.py' -v
+      - name: Generate reproducible JSON evidence
+        run: python -m policyforge.benchmark --output policyforge-report.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: policyforge-synthetic-report
+          path: policyforge-report.json
+          if-no-files-found: error
