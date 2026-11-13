@@ -4,7 +4,7 @@ from __future__ import annotations
 import argparse
 import json
 from pathlib import Path
-from .engine import PrivilegeGraph, key
+from .engine import PrivilegeGraph
 
 
 def run_file(filename: Path) -> dict:
