@@ -1,0 +1,31 @@
+title: CSA-LAB Cross-Owner Object Access (BOLA/IDOR)
+id: 008b049a-b128-499e-8f91-7ce35359314a
+status: experimental
+description: >
+  An authenticated actor requested a note whose stored owner is a different user.
+  A 200 response means the object was disclosed (FINDING-001 exploited); a 403
+  means the attempt was blocked by the ownership check and is still worth triage.
+references:
+  - https://cwe.mitre.org/data/definitions/639.html
+  - https://attack.mitre.org/techniques/T1213/
+author: skuzu7
+date: 2026-11-13
+tags:
+  - attack.collection
+  - attack.t1213
+logsource:
+  category: application
+  product: csa-lab
+detection:
+  selection:
+    cs-uri-stem|startswith: '/note/'
+    actor|exists: true
+    resource_owner|exists: true
+  filter_same_owner:
+    actor|fieldref: resource_owner
+  condition: selection and not filter_same_owner
+falsepositives:
+  - Delegated or shared access, if the application ever adds a sharing feature
+  - Support staff tooling that reads objects on behalf of a user
+level: high
+csa_lab_finding: '001'

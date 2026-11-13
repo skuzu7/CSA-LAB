@@ -1,0 +1,36 @@
+title: CSA-LAB Path Traversal Sequence In Download Parameter
+id: 08dbf2d7-db58-414a-8527-03e7b0832f0a
+status: experimental
+description: >
+  The download parameter contains a parent-directory sequence in raw, encoded or
+  double-encoded form (FINDING-003).
+references:
+  - https://cwe.mitre.org/data/definitions/22.html
+  - https://attack.mitre.org/techniques/T1190/
+  - https://attack.mitre.org/techniques/T1005/
+author: skuzu7
+date: 2026-11-13
+tags:
+  - attack.initial-access
+  - attack.t1190
+  - attack.collection
+  - attack.t1005
+logsource:
+  category: webserver
+detection:
+  selection_endpoint:
+    cs-uri-stem: '/download'
+  selection_traversal:
+    cs-uri-query|contains:
+      - '../'
+      - '..\'
+      - '..%2f'
+      - '..%5c'
+      - '%2e%2e'
+      - '..%252f'
+      - '..%255c'
+  condition: selection_endpoint and selection_traversal
+falsepositives:
+  - None expected; file names are flat identifiers in this application
+level: high
+csa_lab_finding: '003'

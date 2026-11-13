@@ -1,0 +1,27 @@
+title: CSA-LAB Negative Amount Transfer
+id: a6e0403e-cea5-4531-ae13-b844e815e823
+status: experimental
+description: >
+  A transfer request carried a negative amount, which reverses the direction of
+  funds in the vulnerable ledger (FINDING-005). Fires on blocked attempts too.
+references:
+  - https://cwe.mitre.org/data/definitions/839.html
+  - https://attack.mitre.org/techniques/T1565/001/
+author: skuzu7
+date: 2026-11-13
+tags:
+  - attack.impact
+  - attack.t1565.001
+logsource:
+  category: application
+  product: csa-lab
+detection:
+  selection:
+    cs-method: 'POST'
+    cs-uri-stem: '/transfer'
+    amount|lt: 0
+  condition: selection
+falsepositives:
+  - None expected; refunds must be modelled as a transfer in the opposite direction
+level: high
+csa_lab_finding: '005'
