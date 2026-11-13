@@ -2,4 +2,4 @@
 -r vulnerable-app/requirements.txt
 PyYAML==6.0.3
 pySigma==2.1.0
-ruff==0.16.9
+ruff==0.17.4
