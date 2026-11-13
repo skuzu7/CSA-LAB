@@ -1,0 +1,5 @@
+# Development and CI dependencies. Runtime fixture needs are in vulnerable-app/requirements.txt.
+-r vulnerable-app/requirements.txt
+PyYAML==6.0.3
+pySigma==2.1.0
+ruff==0.16.9

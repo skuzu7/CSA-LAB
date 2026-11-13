@@ -11,6 +11,9 @@ This repository is a **research and educational laboratory**, not production sof
 | `tests/security/` | Controlled reproduction tests |
 | `tests/regression/` | Tests for patched behavior |
 | `lab/` | Isolated local environment |
+| `detections/` | Sigma rules and a loopback-only traffic replay |
+| `classification/` | Taxonomy data and CVSS v3.1 calculator |
+| `agent_replay_lab/`, `agent_evals/`, `agent_security/` | Offline, synthetic AI-agent research harnesses |
 
 The **six planted findings (001–006)** are documented under [`writeups/`](writeups/) and already have accompanying mitigation and regression material. These are educational exercises, not undisclosed vulnerabilities in third-party services.
 

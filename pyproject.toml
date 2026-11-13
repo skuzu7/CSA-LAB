@@ -1,0 +1,12 @@
+[tool.ruff]
+target-version = "py311"
+line-length = 120
+
+[tool.ruff.lint]
+# Correctness only: syntax errors and pyflakes. Style is left to the author.
+select = ["E9", "F"]
+
+[tool.ruff.lint.per-file-ignores]
+# The two fixtures import a sibling module after adjusting sys.path.
+"vulnerable-app/app.py" = ["E402"]
+"remediation/patched_app.py" = ["E402"]

@@ -6,7 +6,7 @@ import unittest
 from unittest.mock import patch
 
 from agent_evals.evaluate import (
-    DATASET, ProposedAction, SYSTEM, judge, load_cases, main, parse_action,
+    ProposedAction, SYSTEM, judge, load_cases, parse_action,
     prompt_for, request_model, run, summarize,
 )
 

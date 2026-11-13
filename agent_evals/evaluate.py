@@ -6,7 +6,6 @@ Live API requests require explicit provider, model, and acknowledgement.
 from __future__ import annotations
 
 import argparse
-from collections import Counter
 from dataclasses import dataclass
 import json
 import os
