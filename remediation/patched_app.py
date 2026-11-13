@@ -12,12 +12,17 @@ import hashlib
 import hmac
 import os
 import sqlite3
+import sys
 import urllib.parse
 import urllib.request
 from flask import Flask, request, jsonify, send_file, abort, Response
 
 app = Flask(__name__)
 BASE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, os.path.dirname(BASE))
+import lab_telemetry  # noqa: E402  (opt-in audit log, off unless LAB_AUDIT_LOG is set)
+
+lab_telemetry.install(app)
 DB = os.path.join(BASE, "notes.db")
 FILES = os.path.join(BASE, "files")
 
@@ -95,6 +100,7 @@ def get_note(note_id):
     conn.close()
     if row is None:
         abort(404)
+    lab_telemetry.note(actor=current_user(), resource_owner=row["owner"])
     if row["owner"] != current_user():  # FIX 001
         abort(403)
     return jsonify({"id": row["id"], "owner": row["owner"], "title": row["title"], "body": row["body"]})
@@ -132,12 +138,14 @@ def login():
     conn.close()
     if row is None:
         abort(401)
+    lab_telemetry.note(issued_subject=user)
     return jsonify({"token": _sign(user)})  # FIX 004
 
 
 @app.get("/me")
 def me():
     user = _verify(request.headers.get("X-Session-Token", ""))  # FIX 004
+    lab_telemetry.note(token_valid=user is not None, token_subject=user)
     if user is None:
         abort(401)
     conn = get_db()
@@ -163,6 +171,8 @@ def transfer():
     src = data.get("from", "alice")
     dst = data.get("to", "bob")
     raw = data.get("amount", 0)
+    numeric = isinstance(raw, (int, float)) and not isinstance(raw, bool)
+    lab_telemetry.note(transfer_from=src, transfer_to=dst, amount=raw if numeric else None)
 
     # FIX 005: validate type, sign and bounds BEFORE touching balances.
     if isinstance(raw, bool) or not isinstance(raw, int):

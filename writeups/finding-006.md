@@ -1,6 +1,7 @@
 # FINDING-006 — Server-Side Request Forgery (SSRF) in `GET /preview`
 
 - Severity (lab): High (the server fetches any attacker-chosen URL, including link-local-only routes).
+- Classification: CWE-918; CVSS v3.1 **8.6 (High)** `CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:N/A:N`, scored as if internet-facing — see [classification](../docs/classification.md).
 - Target: local Flask demo, `vulnerable-app/app.py::preview`, commit in this repo. Bind 127.0.0.1:5000. The internal route holds synthetic fixture values, never real credentials.
 - Status: PATCHED (`remediation/patched_app.py::preview`), regression-covered.
 

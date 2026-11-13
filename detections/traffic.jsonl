@@ -1,0 +1,35 @@
+{"id": "b01", "label": "benign", "method": "GET", "path": "/", "note": "service index"}
+{"id": "b02", "label": "benign", "method": "GET", "path": "/note/1", "params": {"as": "alice"}, "note": "owner reads own note"}
+{"id": "b03", "label": "benign", "method": "GET", "path": "/note/2", "params": {"as": "alice"}, "note": "owner reads own note"}
+{"id": "b04", "label": "benign", "method": "GET", "path": "/note/3", "params": {"as": "bob"}, "note": "owner reads own note"}
+{"id": "b05", "label": "benign", "method": "GET", "path": "/note/999", "params": {"as": "alice"}, "note": "unknown id"}
+{"id": "b06", "label": "benign", "method": "GET", "path": "/search", "params": {"q": "shopping"}, "note": "plain search"}
+{"id": "b07", "label": "benign", "method": "GET", "path": "/search", "params": {"q": ""}, "note": "empty search"}
+{"id": "b08", "label": "benign", "method": "GET", "path": "/search", "params": {"q": "o'brien"}, "note": "hard negative: apostrophe in a name"}
+{"id": "b09", "label": "benign", "method": "GET", "path": "/search", "params": {"q": "rock or roll"}, "note": "hard negative: SQL keyword without quote"}
+{"id": "b10", "label": "benign", "method": "GET", "path": "/search", "params": {"q": "it's a to-do -- urgent"}, "note": "hard negative: apostrophe and double dash, not adjacent"}
+{"id": "b11", "label": "benign", "method": "GET", "path": "/search", "params": {"q": "50% off; today"}, "note": "hard negative: percent and semicolon"}
+{"id": "b12", "label": "benign", "method": "GET", "path": "/search", "params": {"q": "union select committee"}, "note": "hard negative: SQL words in prose"}
+{"id": "b13", "label": "benign", "method": "GET", "path": "/download", "params": {"f": "public.txt"}, "note": "legitimate file"}
+{"id": "b14", "label": "benign", "method": "GET", "path": "/download", "note": "default file"}
+{"id": "b15", "label": "benign", "method": "GET", "path": "/download", "params": {"f": "report.v1.2.txt"}, "note": "hard negative: dots in file name"}
+{"id": "b16", "label": "benign", "method": "GET", "path": "/download", "params": {"f": "notes..final.txt"}, "note": "hard negative: double dot without separator"}
+{"id": "b17", "label": "benign", "method": "GET", "path": "/login", "params": {"as": "alice"}, "note": "token issuance", "capture_token": "alice"}
+{"id": "b18", "label": "benign", "method": "GET", "path": "/me", "headers": {"X-Session-Token": "{{token:alice}}"}, "note": "issued token used by its subject"}
+{"id": "b19", "label": "benign", "method": "GET", "path": "/me", "headers": {"X-Session-Token": "{{token:alice}}"}, "note": "token reuse"}
+{"id": "b20", "label": "benign", "method": "POST", "path": "/transfer", "json": {"from": "alice", "to": "bob", "amount": 10}, "note": "positive transfer"}
+{"id": "b21", "label": "benign", "method": "POST", "path": "/transfer", "json": {"from": "bob", "to": "alice", "amount": 5}, "note": "positive transfer back"}
+{"id": "b22", "label": "benign", "method": "POST", "path": "/transfer", "json": {"from": "alice", "to": "bob", "amount": 100000}, "note": "hard negative: rejected for insufficient funds"}
+{"id": "a01", "label": "attack", "finding": "001", "method": "GET", "path": "/note/3", "params": {"as": "alice"}, "note": "alice requests bob's note"}
+{"id": "a02", "label": "attack", "finding": "001", "method": "GET", "path": "/note/1", "params": {"as": "bob"}, "note": "bob requests alice's note"}
+{"id": "a03", "label": "attack", "finding": "002", "method": "GET", "path": "/search", "params": {"q": "zzz%' OR '1'='1' -- "}, "note": "boolean tautology (PoC payload)"}
+{"id": "a04", "label": "attack", "finding": "002", "method": "GET", "path": "/search", "params": {"q": "' OR '1'='1"}, "note": "boolean tautology (regression payload)"}
+{"id": "a05", "label": "attack", "finding": "002", "method": "GET", "path": "/search", "params": {"q": "x' UNION SELECT 1,2,3 -- "}, "note": "UNION extraction shape"}
+{"id": "a06", "label": "attack", "finding": "003", "method": "GET", "path": "/download", "params": {"f": "../app.py"}, "note": "parent directory (PoC payload)"}
+{"id": "a07", "label": "attack", "finding": "003", "method": "GET", "path": "/download", "params": {"f": "....//app.py"}, "note": "filter-evasion doubling"}
+{"id": "a08", "label": "attack", "finding": "003", "method": "GET", "path": "/download", "params": {"f": "..\\app.py"}, "note": "backslash separator"}
+{"id": "a09", "label": "attack", "finding": "004", "method": "GET", "path": "/me", "headers": {"X-Session-Token": "Ym9i"}, "note": "base64('bob') forged without any issuance"}
+{"id": "a10", "label": "attack", "finding": "005", "method": "POST", "path": "/transfer", "json": {"from": "alice", "to": "bob", "amount": -50}, "note": "negative amount (PoC payload)"}
+{"id": "a11", "label": "attack", "finding": "005", "method": "POST", "path": "/transfer", "json": {"from": "bob", "to": "alice", "amount": -1}, "note": "minimal negative amount"}
+{"id": "a12", "label": "attack", "finding": "006", "method": "GET", "path": "/preview", "params": {"url": "http://127.0.0.1:5000/internal/config"}, "note": "loopback internal route (PoC payload)"}
+{"id": "a13", "label": "attack", "finding": "006", "method": "GET", "path": "/preview", "params": {"url": "http://localhost:5000/internal/config"}, "note": "loopback by name"}

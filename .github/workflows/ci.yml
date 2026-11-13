@@ -19,14 +19,16 @@ jobs:
     timeout-minutes: 10
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
         with:
           python-version: "3.11"
 
-      - name: Install pinned-environment dependencies
+      - name: Install pinned dependencies
         run: python -m pip install -r vulnerable-app/requirements.txt
 
       - name: Reproduce planted findings, then validate patched regressions
@@ -38,8 +40,66 @@ jobs:
           cat agent-policy-report.json
 
       - name: Publish reproducible synthetic evaluation report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: agent-tool-boundary-evaluation
           path: agent-policy-report.json
+          if-no-files-found: error
+
+  detections-and-classification:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: "3.11"
+
+      - name: Install pinned dependencies
+        run: python -m pip install -r requirements-dev.txt
+
+      - name: Lint for correctness (syntax errors, undefined names, unused imports)
+        run: ruff check .
+
+      - name: CVSS calculator and classification integrity
+        run: |
+          python -m unittest discover -s classification/tests -t . -v
+          python -m classification.render --check
+
+      - name: Sigma evaluator, offline rule checks and pySigma conformance
+        run: python -m unittest discover -s detections/tests -t . -v
+
+      - name: Replay labelled traffic against both fixtures and score the rules
+        run: python -m detections.validate --output detection-report.json
+
+      - name: Assert the published detection figures
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          report = json.loads(Path('detection-report.json').read_text())
+          assert len(report['rules']) == 6
+          for name in ('vulnerable', 'patched'):
+              result = report['variants'][name]
+              assert (result['attack_events'], result['benign_events']) == (13, 22), name
+              assert result['attack_events_detected'] == 13, name
+              assert result['benign_or_misattributed_events_alerted'] == 0, name
+              assert result['mismatches'] == [], name
+          statuses = [e['status'] for e in report['variants']['vulnerable']['events'] if e['label'] == 'attack']
+          assert statuses.count(200) == 11 and statuses.count(404) == 2
+          blocked = [e['status'] for e in report['variants']['patched']['events'] if e['label'] == 'attack']
+          assert sorted(set(blocked)) == [200, 400, 401, 403, 404]
+          print('Detection replay figures match the documentation')
+          PY
+
+      - name: Publish detection replay report
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: detection-replay-report
+          path: detection-report.json
           if-no-files-found: error

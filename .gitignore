@@ -7,3 +7,8 @@ __pycache__/
 remediation/files/
 vulnerable-app/files/
 vulnerable-app/notes.db
+detection-report.json
+*-report.json
+baseline.json
+attack-control.json
+.ruff_cache/

@@ -1,0 +1,34 @@
+title: CSA-LAB Server-Side Fetch To Internal Destination
+id: 4d1aea9f-40fb-466f-a17e-d7ccc63dc545
+status: experimental
+description: >
+  The URL-preview parameter targets loopback, link-local (cloud metadata), RFC 1918
+  space or a non-HTTP scheme (FINDING-006). Pattern-based; it does not resolve DNS,
+  follow redirects or decode alternate IP notations, so it complements and never
+  replaces a server-side allowlist.
+references:
+  - https://cwe.mitre.org/data/definitions/918.html
+  - https://attack.mitre.org/techniques/T1190/
+  - https://attack.mitre.org/techniques/T1552/005/
+author: skuzu7
+date: 2026-11-13
+tags:
+  - attack.initial-access
+  - attack.t1190
+  - attack.credential-access
+  - attack.t1552.005
+logsource:
+  category: webserver
+detection:
+  selection_endpoint:
+    cs-uri-stem: '/preview'
+  selection_internal_host:
+    cs-uri-query|re|i: 'url=(https?|ftp)(%3a|:)(%2f|/){2}(([^/&%]|%3a)*(@|%40))?(127\.|localhost|0\.0\.0\.0|169\.254\.|10\.|192\.168\.|172\.(1[6-9]|2[0-9]|3[01])\.|(%5b|\[)(%3a|:){2}1|metadata)'
+  selection_local_scheme:
+    cs-uri-query|re|i: 'url=(file|gopher|dict)(%3a|:)'
+  condition: selection_endpoint and (selection_internal_host or selection_local_scheme)
+falsepositives:
+  - The patched fixture allowlists loopback /note/ previews as a test convenience; that flow alerts by design
+  - Internal link previews in applications that intentionally fetch private hosts
+level: high
+csa_lab_finding: '006'

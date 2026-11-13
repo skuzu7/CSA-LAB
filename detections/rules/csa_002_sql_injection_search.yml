@@ -1,0 +1,28 @@
+title: CSA-LAB SQL Injection Pattern In Search Query
+id: db99b711-64e8-4f4c-a24c-f6f3086776dd
+status: experimental
+description: >
+  The search parameter contains a string terminator immediately followed by a SQL
+  boolean operator, UNION, statement separator or comment marker (FINDING-002).
+  Matches raw percent-encoded and decoded query strings.
+references:
+  - https://cwe.mitre.org/data/definitions/89.html
+  - https://attack.mitre.org/techniques/T1190/
+author: skuzu7
+date: 2026-11-13
+tags:
+  - attack.initial-access
+  - attack.t1190
+logsource:
+  category: webserver
+detection:
+  selection_endpoint:
+    cs-uri-stem: '/search'
+  selection_sqli:
+    cs-uri-query|re|i: '(%27|'')(\+|%20|\s)*((or|and|union)(\+|%20|\s|\(|%28)|;|%3b|--)'
+  condition: selection_endpoint and selection_sqli
+falsepositives:
+  - Free-text searches where an apostrophe is directly followed by the words or/and
+  - Numeric-context or encoded-comment injections are NOT covered by this pattern
+level: high
+csa_lab_finding: '002'

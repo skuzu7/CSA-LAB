@@ -1,0 +1,7 @@
+# Every change is reviewed by the maintainer. Authorization and scope documents
+# are listed explicitly because weakening them changes what the lab may touch.
+*                       @skuzu7
+/AUTHORIZATION.md       @skuzu7
+/SECURITY.md            @skuzu7
+/docs/scope.md          @skuzu7
+/.github/workflows/     @skuzu7

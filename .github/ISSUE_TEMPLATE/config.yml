@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Report a security problem privately
+    url: https://github.com/skuzu7/CSA-LAB/security/policy
+    about: Do not open a public issue for an unexpected vulnerability. Follow the security policy.
+  - name: Ask about an assessment
+    url: https://github.com/skuzu7/CSA-LAB/blob/main/SERVICES.md
+    about: Scope, process and contact for security assessment work.

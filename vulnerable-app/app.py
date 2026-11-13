@@ -12,12 +12,17 @@ Planted flaws (see writeups/):
 import base64
 import os
 import sqlite3
+import sys
 import urllib.parse
 import urllib.request
 from flask import Flask, request, jsonify, send_file, abort, Response
 
 app = Flask(__name__)
 BASE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, os.path.dirname(BASE))
+import lab_telemetry  # noqa: E402  (opt-in audit log, off unless LAB_AUDIT_LOG is set)
+
+lab_telemetry.install(app)
 DB = os.path.join(BASE, "notes.db")
 FILES = os.path.join(BASE, "files")
 
@@ -66,6 +71,7 @@ def get_note(note_id):
     conn.close()
     if row is None:
         abort(404)
+    lab_telemetry.note(actor=current_user(), resource_owner=row["owner"])
     return jsonify({"id": row["id"], "owner": row["owner"], "title": row["title"], "body": row["body"]})
 
 
@@ -94,6 +100,7 @@ def login():
     # FINDING-004: token is just base64(username) — unsigned and predictable.
     user = request.args.get("as", "alice")
     token = base64.b64encode(user.encode()).decode()
+    lab_telemetry.note(issued_subject=user)
     return jsonify({"token": token})
 
 
@@ -107,6 +114,7 @@ def me():
         abort(401)
     if not user:
         abort(401)
+    lab_telemetry.note(token_subject=user)
     conn = get_db()
     row = conn.execute("SELECT owner, balance FROM accounts WHERE owner = ?", (user,)).fetchone()
     conn.close()
@@ -123,6 +131,7 @@ def transfer():
     src = data.get("from", "alice")
     dst = data.get("to", "bob")
     amount = int(data.get("amount", 0))
+    lab_telemetry.note(transfer_from=src, transfer_to=dst, amount=amount)
     conn = get_db()
     row = conn.execute("SELECT balance FROM accounts WHERE owner = ?", (src,)).fetchone()
     if row is None:

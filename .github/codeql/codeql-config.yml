@@ -1,0 +1,7 @@
+name: CSA-LAB CodeQL configuration
+
+# vulnerable-app/ is insecure on purpose; its flaws are documented in writeups/
+# and proven by tests/security. Scanning it would only restate planted findings,
+# so static analysis is aimed at the code that is meant to be correct.
+paths-ignore:
+  - vulnerable-app

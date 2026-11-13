@@ -1,0 +1,36 @@
+name: Lab defect
+description: A test, rule, score or document in the lab is wrong or does not reproduce.
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: The planted vulnerabilities in `vulnerable-app/` are intentional. Report them only if a write-up, test or fix is incorrect.
+  - type: input
+    id: component
+    attributes:
+      label: Component
+      description: File, finding id, rule id or module.
+      placeholder: detections/rules/csa_002_sql_injection_search.yml
+    validations:
+      required: true
+  - type: textarea
+    id: observed
+    attributes:
+      label: What happened, and what should have happened
+      description: Include the exact command and its output, run against your own local clone.
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      placeholder: Ubuntu 24.04, Python 3.11.9, commit abc1234
+    validations:
+      required: true
+  - type: checkboxes
+    id: boundaries
+    attributes:
+      label: Boundaries
+      options:
+        - label: This report contains no secrets, personal data or details of any third-party system.
+          required: true
