@@ -1,0 +1,30 @@
+name: CLOUD-PATH privilege graph evidence
+on:
+  pull_request:
+    paths:
+      - 'cloudpath/**'
+      - '.github/workflows/cloudpath.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'cloudpath/**'
+      - '.github/workflows/cloudpath.yml'
+permissions:
+  contents: read
+jobs:
+  test-and-report:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m compileall -q cloudpath
+      - run: python -m unittest discover -s cloudpath/tests -p 'test_*.py' -v
+      - run: python -m cloudpath.benchmark --output cloudpath-report.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: cloudpath-synthetic-privilege-report
+          path: cloudpath-report.json
+          if-no-files-found: error

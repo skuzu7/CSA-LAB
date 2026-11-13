@@ -1,0 +1,88 @@
+{
+  "title": "Synthetic cross-role escalation chain — no live targets",
+  "nodes": [
+    {
+      "id": "principal:developer",
+      "kind": "principal"
+    },
+    {
+      "id": "role:build",
+      "kind": "role"
+    },
+    {
+      "id": "role:release",
+      "kind": "role"
+    },
+    {
+      "id": "role:admin",
+      "kind": "role"
+    },
+    {
+      "id": "resource:synthetic-secret",
+      "kind": "resource"
+    },
+    {
+      "id": "principal:intern",
+      "kind": "principal"
+    },
+    {
+      "id": "resource:public-docs",
+      "kind": "resource"
+    }
+  ],
+  "edges": [
+    {
+      "from": "principal:developer",
+      "to": "role:build",
+      "action": "sts:AssumeRole",
+      "revocable": true
+    },
+    {
+      "from": "role:build",
+      "to": "role:release",
+      "action": "rbac:delegate",
+      "revocable": true
+    },
+    {
+      "from": "role:release",
+      "to": "role:admin",
+      "action": "iam:PassRole",
+      "revocable": true
+    },
+    {
+      "from": "role:admin",
+      "to": "resource:synthetic-secret",
+      "action": "secretsmanager:GetSecretValue",
+      "revocable": true
+    },
+    {
+      "from": "principal:developer",
+      "to": "resource:public-docs",
+      "action": "s3:GetObject",
+      "revocable": true
+    },
+    {
+      "from": "principal:intern",
+      "to": "role:admin",
+      "action": "sts:AssumeRole",
+      "condition_met": false
+    }
+  ],
+  "queries": [
+    {
+      "source": "principal:developer",
+      "target": "resource:synthetic-secret",
+      "expected_reachable": true
+    },
+    {
+      "source": "principal:intern",
+      "target": "resource:synthetic-secret",
+      "expected_reachable": false
+    },
+    {
+      "source": "principal:developer",
+      "target": "resource:public-docs",
+      "expected_reachable": true
+    }
+  ]
+}
