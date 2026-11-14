@@ -108,6 +108,7 @@ limitations ([TRACEGUARD results](agent_replay_lab/RESULTS.md),
 | --- | --- |
 | `vulnerable-app/`, `remediation/` | Intentionally insecure Flask + SQLite service and its patched equivalent, both bound to loopback |
 | `tests/security/`, `tests/regression/` | Exploit proofs and fix regressions |
+| `authz-diff/` | Access-control replay tester: replays a captured session as a second user and with no credentials, with its own intentionally vulnerable loopback API and tests |
 | `writeups/` | One evidence report per finding: context, root cause, reproduction, patch, residual risk |
 | `classification/`, `docs/classification.md` | Taxonomy data, CVSS v3.1 calculator, generated classification page |
 | `detections/` | Sigma rules, stateful enrichment, evaluator, labelled traffic, replay scorer |
@@ -123,7 +124,8 @@ limitations ([TRACEGUARD results](agent_replay_lab/RESULTS.md),
   token permission and credentials not persisted after checkout.
 - Exact dependency pins, updated by [Dependabot](.github/dependabot.yml).
 - [CodeQL](.github/workflows/codeql.yml) on every pull request for the code meant
-  to be correct; the intentionally vulnerable app is excluded and says why.
+  to be correct; the intentionally vulnerable fixtures are excluded and the
+  configuration says why.
 - Correctness linting, [code owners](.github/CODEOWNERS), a
   [security policy](SECURITY.md) and a pull-request checklist that blocks
   unverified claims.
@@ -131,7 +133,7 @@ limitations ([TRACEGUARD results](agent_replay_lab/RESULTS.md),
 ## Authorized boundaries
 
 - Testing is restricted to owned local fixtures or explicitly permitted educational environments.
-- Never expose `vulnerable-app/` to a network or connect real data.
+- Never expose `vulnerable-app/` or `authz-diff/lab/` to a network or connect real data.
 - Do not scan, exploit or access third-party systems without explicit written authorization.
 - No active external bug-bounty programme is claimed.
 
