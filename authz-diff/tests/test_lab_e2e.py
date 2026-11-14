@@ -1,6 +1,7 @@
 """Run the whole tool against the bundled lab and check every route's verdict."""
 
 import contextlib
+import inspect
 import io
 import json
 import tempfile
@@ -55,6 +56,16 @@ class LabEndToEnd(unittest.TestCase):
         with contextlib.redirect_stdout(out), contextlib.redirect_stderr(err):
             code = main(["-c", str(self.config), "--har", str(self.har), *extra])
         return code, out.getvalue(), err.getvalue()
+
+    def test_lab_can_only_bind_to_loopback(self):
+        # AUTHORIZATION.md and docs/scope.md rely on this.
+        self.assertEqual(self.server.server_address[0], "127.0.0.1")
+        self.assertEqual(list(inspect.signature(make_server).parameters), ["port", "verbose"])
+
+    def test_documented_default_address_is_the_real_one(self):
+        self.assertEqual(inspect.signature(make_server).parameters["port"].default, 8099)
+        self.assertIn(f'hosts = ["{LAB_ADDRESS}"]', (ROOT / "examples/lab.toml").read_text())
+        self.assertIn(f"http://{LAB_ADDRESS}/api/me", (ROOT / "examples/lab.har").read_text())
 
     def test_every_route_gets_the_expected_verdict(self):
         cfg = load_config(self.config)

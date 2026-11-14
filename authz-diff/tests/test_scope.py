@@ -18,14 +18,14 @@ class ScopeTests(unittest.TestCase):
         self.assertTrue(in_scope("https://api.example.com:8443/", ("api.example.com:*",)))
 
     def test_wildcard_subdomain(self):
-        scope = ("*.example.com",)
-        self.assertTrue(in_scope("https://app.example.com/", scope))
-        self.assertFalse(in_scope("https://example.com/", scope))
-        self.assertFalse(in_scope("https://evil-example.com/", scope))
-        self.assertFalse(in_scope("https://app.example.com.evil.net/", scope))
+        scope = ("*.lab.test",)
+        self.assertTrue(in_scope("https://app.lab.test/", scope))
+        self.assertFalse(in_scope("https://lab.test/", scope))
+        self.assertFalse(in_scope("https://evil-lab.test/", scope))
+        self.assertFalse(in_scope("https://app.lab.test.attacker.test/", scope))
 
     def test_userinfo_does_not_fool_the_check(self):
-        self.assertFalse(in_scope("https://api.example.com@evil.net/", ("api.example.com",)))
+        self.assertFalse(in_scope("https://api.example.com@attacker.test/", ("api.example.com",)))
 
     def test_other_schemes_and_garbage_are_rejected(self):
         scope = ("*",)
