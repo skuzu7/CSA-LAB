@@ -1,0 +1,11 @@
+__pycache__/
+*.egg-info/
+build/
+dist/
+.venv/
+
+# Captures and results from real targets hold session tokens and other people's data.
+*.har
+!examples/lab.har
+*.local.toml
+out/

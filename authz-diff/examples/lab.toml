@@ -1,0 +1,29 @@
+# Config for the bundled lab (python lab/server.py). Copy it as a starting
+# point for a real program, and keep real tokens out of the file: write
+# "${MY_TOKEN}" and export MY_TOKEN in your shell instead.
+
+[scope]
+# Only these hosts will ever receive a request. A name without a port means
+# the default port (80/443); use "host:8443" or "host:*" for anything else.
+hosts = ["127.0.0.1:8099"]
+
+[settings]
+rate_limit = 20            # requests per second; keep it low on real programs
+timeout = 10
+methods = ["GET"]          # anything else also needs --allow-state-changing
+similarity_threshold = 0.95
+# extra_headers = { "X-Bug-Bounty" = "your-handle" }   # some programs require one
+# ignore_keys = ["updated_at"]                         # extra JSON keys that change on every call
+
+# The account whose session you captured. `markers` are strings that only
+# appear in this account's private data: they are how a leak is confirmed.
+[identities.owner]
+name = "alice"
+headers = { Authorization = "Bearer lab-token-alice" }
+markers = ["alice@lab.test", "Alice Souza"]
+
+# A second account you control, with the same privilege level.
+[identities.other]
+name = "bob"
+headers = { Authorization = "Bearer lab-token-bob" }
+markers = ["bob@lab.test", "Bob Lima"]
