@@ -4,6 +4,9 @@ Notable changes, newest first. Dates are merge dates on `main`.
 
 ## Unreleased
 
+- Access-control replay tester (`authz-diff/`): replays a captured session as a
+  second user and with no credentials against a bundled, intentionally
+  vulnerable loopback API, and CI asserts its verdict for every route.
 - Detection engineering: six Sigma rules, opt-in audit telemetry in both
   fixtures, a labelled traffic replay scoring recall and false alerts on the
   vulnerable and patched builds, and pySigma conformance checks.

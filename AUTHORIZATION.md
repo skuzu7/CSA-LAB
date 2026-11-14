@@ -4,7 +4,7 @@ This document defines the authorized scope for this laboratory. It is the single
 
 ## 1. Authorized targets and research surfaces
 
-1. **First-party code in this repository**, including the intentionally vulnerable vulnerable-app/, local lab/ fixtures, and the offline research modules agent_security/, agent_evals/, agent_replay_lab/, classification/, and detections/. These are run on the researcher's own machine or in repository-controlled CI with synthetic data.
+1. **First-party code in this repository**, including the intentionally vulnerable vulnerable-app/, local lab/ fixtures, the authz-diff/ access-control replay tester together with its intentionally vulnerable authz-diff/lab/ API, and the offline research modules agent_security/, agent_evals/, agent_replay_lab/, classification/, and detections/. These are run on the researcher's own machine or in repository-controlled CI with synthetic data.
 2. **Deliberately vulnerable applications run locally**, such as this repository's demo app or an OWASP Juice Shop instance started by the researcher in local Docker. The service must remain on loopback or an isolated local container network; it must not be exposed to public networks.
 3. **Optional model-provider evaluation** through the explicitly opt-in adapters in agent_evals/ or agent_replay_lab/. This is limited to synthetic benchmark text sent to the adapter's fixed official provider API endpoint, using a key supplied by the researcher through a local environment variable and an explicit acknowledgement of possible API cost. No model-proposed tool action is executed. This is not authorization to test the provider, other customers, or any external system.
 4. **Educational labs and CTFs** (for example PortSwigger Web Security Academy, Hack The Box, or TryHackMe) only when the researcher has selected a specific lab and the activity is permitted by the provider's current terms and published scope. No external educational target is currently recorded as active in docs/scope.md.
@@ -23,6 +23,7 @@ This document defines the authorized scope for this laboratory. It is the single
 ## 3. Environment controls
 
 - The demo app binds to 127.0.0.1; local container networking is isolated and is not published to the public internet.
+- authz-diff/lab binds to 127.0.0.1 and has no option to change the address. The authz-diff replay tester sends requests only to hosts listed in its scope configuration and does not follow redirects. In this repository it is authorized against the repository's loopback fixtures only; an external program must first be recorded under §1.5.
 - Test data is synthetic (including fictional alice and bob users). No production customer data or real credentials are used.
 - Default test and CI paths are offline and require no provider credentials.
 - Optional model-provider evaluations are user-initiated, use synthetic case text only, and require a local environment key plus explicit cost acknowledgement. Keys must never be committed, printed in reports, or placed in workflow files.
