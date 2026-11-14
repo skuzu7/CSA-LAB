@@ -16,6 +16,11 @@ bounty program's scope, a signed pentest agreement), and only with accounts you
 created yourself. Read the program's rules first: some forbid automation, set
 a request rate, or require an identifying header.
 
+Inside this repository the tool is covered by [AUTHORIZATION.md](../AUTHORIZATION.md):
+it is authorized against the bundled lab and the repository's other loopback
+fixtures only. Before pointing it at an external program, record that program
+in `AUTHORIZATION.md` and [docs/scope.md](../docs/scope.md), as §1.5 requires.
+
 ## Try it on the lab
 
 Run every command in this README from the `authz-diff/` directory.
