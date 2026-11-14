@@ -22,6 +22,7 @@ python -m detections.validate --output detection-report.json
 python -m unittest discover -s agent_replay_lab/tests -v
 python -m unittest discover -s agent_evals -p 'test_*.py' -v
 python agent_security/offline_benchmark.py --json
+(cd authz-diff && python -m unittest discover -s tests -t . -v)
 ```
 
 ## Rules

@@ -66,6 +66,10 @@ jobs:
       - name: Lint for correctness (syntax errors, undefined names, unused imports)
         run: ruff check .
 
+      - name: Access-control replay tester against its bundled loopback API
+        working-directory: authz-diff
+        run: python -m unittest discover -s tests -t . -v
+
       - name: CVSS calculator and classification integrity
         run: |
           python -m unittest discover -s classification/tests -t . -v
