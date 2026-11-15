@@ -1,0 +1,95 @@
+{
+  "version": 1,
+  "purpose": "Public evidence register for defensive research; not an accreditation or compliance certificate.",
+  "reviewed_on": "2026-11-15",
+  "allowed_statuses": [
+    "demonstrated_local",
+    "planned",
+    "externally_verified"
+  ],
+  "controls": [
+    {
+      "id": "LAB-001",
+      "name": "Written scope and permission boundaries",
+      "status": "demonstrated_local",
+      "evidence": [
+        "AUTHORIZATION.md",
+        "docs/scope.md"
+      ],
+      "limitations": "Only first-party fixtures and consented synthetic research; not a third-party authorization."
+    },
+    {
+      "id": "LAB-002",
+      "name": "Reproducible vulnerability and remediation checks",
+      "status": "demonstrated_local",
+      "evidence": [
+        "tests/security/test_findings_vulnerable.py",
+        "tests/regression/test_fixes.py",
+        ".github/workflows/ci.yml"
+      ],
+      "limitations": "Six deliberately planted findings in the local demonstration application."
+    },
+    {
+      "id": "LAB-003",
+      "name": "Detection evaluation with labelled traffic",
+      "status": "demonstrated_local",
+      "evidence": [
+        "detections/validate.py",
+        "detections/traffic.jsonl"
+      ],
+      "limitations": "Small in-sample synthetic corpus; no production detection-performance claim."
+    },
+    {
+      "id": "LAB-004",
+      "name": "AI-agent host authorization experiments",
+      "status": "demonstrated_local",
+      "evidence": [
+        "agent_replay_lab/METHODS.md",
+        "agent_replay_lab/RESULTS.md"
+      ],
+      "limitations": "Scripted offline controls, not validated outcomes for a live LLM."
+    },
+    {
+      "id": "ORG-001",
+      "name": "Verified legal organization, operator roles and identity",
+      "status": "planned",
+      "evidence": [],
+      "limitations": "No legal entity, employment, contracts, or organizational verification is inferred from this repository."
+    },
+    {
+      "id": "ORG-002",
+      "name": "Enterprise identity, phishing-resistant MFA and managed devices",
+      "status": "planned",
+      "evidence": [],
+      "limitations": "Repository cannot attest to account settings, hardware, personnel, or device management."
+    },
+    {
+      "id": "ORG-003",
+      "name": "Enforced egress policy, centralized audit logging and incident response",
+      "status": "planned",
+      "evidence": [],
+      "limitations": "Offline lab boundaries are not production egress enforcement or enterprise monitoring."
+    },
+    {
+      "id": "EXT-001",
+      "name": "Independently reviewed upstream security contribution",
+      "status": "planned",
+      "evidence": [],
+      "limitations": "No accepted third-party security patch is claimed."
+    },
+    {
+      "id": "EXT-002",
+      "name": "Accepted disclosure or independently acknowledged vulnerability",
+      "status": "planned",
+      "evidence": [],
+      "limitations": "Planted findings are not CVEs or bug bounty reports."
+    },
+    {
+      "id": "SYS-001",
+      "name": "Real, written authorization for critical infrastructure testing",
+      "status": "planned",
+      "evidence": [],
+      "limitations": "No infrastructure operator approval or government contract is claimed."
+    }
+  ]
+}
