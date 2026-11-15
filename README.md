@@ -15,6 +15,13 @@ is asserted by a test in CI.
 > certification or live-model evaluation, and no membership of any vendor
 > trusted-access programme is claimed.
 
+**Institutional review readiness (not a certification):** A
+[reviewable control register](governance/controls.json), [fail-closed evidence
+validator](governance/validate.py) and [institutional-readiness roadmap](docs/INSTITUTIONAL_READINESS.md)
+now distinguish what this local lab demonstrates from organizational access controls,
+independent vulnerability validation and critical-infrastructure authorizations
+that have **not** been obtained. The register and negative tests run in CI.
+
 **Hiring for an assessment?** See [services](SERVICES.md), the
 [sample report](reports/sample-assessment-report.md) and the
 [engagement kit](engagement/README.md).
