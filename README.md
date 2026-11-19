@@ -83,6 +83,15 @@ exactly its own rule and each benign request to raise none. It is an in-sample
 regression harness on a small corpus, not an estimate of production detection
 efficacy — see [detections/README.md](detections/README.md).
 
+## Evidence-gated research notes
+
+The [offline evidence gate](evidence_gate/README.md) rejects unsupported upgrades
+from hypothesis to locally reproduced findings, checks local SHA-256 artifact
+integrity, requires negative controls and prevents known duplicates from reaching
+review-ready status. These are **synthetic, offline integrity checks**: they do
+not prove real security impact, original discovery or legal authorization. No
+external targets are tested and no report is sent.
+
 ## AI-agent tool-use security research
 
 Three offline, deterministic harnesses study one question: when an agent reads
