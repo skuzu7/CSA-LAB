@@ -9,3 +9,6 @@
 # Guard claim types, evidentiary references and institutional disclaimers.
 /governance/             @skuzu7
 /docs/INSTITUTIONAL_READINESS.md @skuzu7
+
+# Synthetic adversary-emulation module and evidentiary boundaries.
+/apt_emulation/        @skuzu7

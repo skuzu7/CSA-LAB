@@ -26,6 +26,10 @@ that have **not** been obtained. The register and negative tests run in CI.
 [sample report](reports/sample-assessment-report.md) and the
 [engagement kit](engagement/README.md).
 
+## APT-like adversary emulation — MIRRORTRACE (synthetic)
+
+[MIRRORTRACE](apt_emulation/README.md) is a **seven-stage, ATT&CK-mapped, fictional adversary-emulation sequence** with offline JSON telemetry, a Python correlation engine, five negative controls, ten unit tests, a reproducible JSON report and CI validation. The module only replays synthetic events: there is **no actual malware, persistence, lateral movement, command-and-control or exfiltration**. It is a reviewable red/purple-team engineering exercise, not a real APT operation or evidence of external program credentials.
+
 ## The cycle, with evidence
 
 | Stage | What exists | Verified by |
@@ -127,6 +131,7 @@ limitations ([TRACEGUARD results](agent_replay_lab/RESULTS.md),
 | `writeups/` | One evidence report per finding: context, root cause, reproduction, patch, residual risk |
 | `classification/`, `docs/classification.md` | Taxonomy data, CVSS v3.1 calculator, generated classification page |
 | `detections/` | Sigma rules, stateful enrichment, evaluator, labelled traffic, replay scorer |
+| `apt_emulation/` | MIRRORTRACE synthetic APT-like seven-stage sequence, correlation and negative-control tests |
 | `docs/` | Scope, threat model, methodology, adversary emulation plan, responsible use |
 | `reports/`, `engagement/`, `SERVICES.md` | Sample client report, engagement templates, service description |
 | `agent_replay_lab/`, `agent_evals/`, `agent_security/` | AI-agent security research harnesses |

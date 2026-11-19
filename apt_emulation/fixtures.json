@@ -1,0 +1,354 @@
+[
+  {
+    "id": "mirrortrace-seven-stage",
+    "expected_alert": true,
+    "description": "Fictional APT-like chain: fabricated log records.",
+    "events": [
+      {
+        "timestamp": "2026-11-01T12:00:00Z",
+        "actor": "sim-operator",
+        "campaign": "SIM-MIRRORTRACE",
+        "host": "lab-web-01",
+        "source": "web-gw",
+        "technique": "T1190",
+        "event_type": "web_access_anomaly",
+        "synthetic": true
+      },
+      {
+        "timestamp": "2026-11-01T12:02:00Z",
+        "actor": "sim-operator",
+        "campaign": "SIM-MIRRORTRACE",
+        "host": "lab-ws-01",
+        "source": "edr",
+        "technique": "T1082",
+        "event_type": "system_inventory_observed",
+        "synthetic": true
+      },
+      {
+        "timestamp": "2026-11-01T12:04:00Z",
+        "actor": "sim-operator",
+        "campaign": "SIM-MIRRORTRACE",
+        "host": "lab-ws-01",
+        "source": "edr",
+        "technique": "T1547.001",
+        "event_type": "autorun_configuration_observed",
+        "synthetic": true
+      },
+      {
+        "timestamp": "2026-11-01T12:06:00Z",
+        "actor": "sim-operator",
+        "campaign": "SIM-MIRRORTRACE",
+        "host": "lab-srv-01",
+        "source": "identity",
+        "technique": "T1021.002",
+        "event_type": "share_session_observed",
+        "synthetic": true
+      },
+      {
+        "timestamp": "2026-11-01T12:08:00Z",
+        "actor": "sim-operator",
+        "campaign": "SIM-MIRRORTRACE",
+        "host": "lab-srv-01",
+        "source": "fs-audit",
+        "technique": "T1005",
+        "event_type": "fixture_file_access_observed",
+        "synthetic": true
+      },
+      {
+        "timestamp": "2026-11-01T12:10:00Z",
+        "actor": "sim-operator",
+        "campaign": "SIM-MIRRORTRACE",
+        "host": "lab-srv-01",
+        "source": "proxy",
+        "technique": "T1071.001",
+        "event_type": "periodic_web_traffic_observed",
+        "synthetic": true
+      },
+      {
+        "timestamp": "2026-11-01T12:12:00Z",
+        "actor": "sim-operator",
+        "campaign": "SIM-MIRRORTRACE",
+        "host": "lab-srv-01",
+        "source": "proxy",
+        "technique": "T1041",
+        "event_type": "outbound_bytes_observed",
+        "synthetic": true
+      }
+    ]
+  },
+  {
+    "id": "benign-asset-inventory",
+    "expected_alert": false,
+    "description": "Inventory event alone.",
+    "events": [
+      {
+        "timestamp": "2026-11-01T12:02:00Z",
+        "actor": "sim-operator",
+        "campaign": "SIM-MIRRORTRACE",
+        "host": "lab-ws-01",
+        "source": "edr",
+        "technique": "T1082",
+        "event_type": "system_inventory_observed",
+        "synthetic": true
+      }
+    ]
+  },
+  {
+    "id": "benign-maintenance-and-backup",
+    "expected_alert": false,
+    "description": "Administrative and backup observations.",
+    "events": [
+      {
+        "timestamp": "2026-11-01T12:06:00Z",
+        "actor": "sim-operator",
+        "campaign": "SIM-MIRRORTRACE",
+        "host": "lab-srv-01",
+        "source": "identity",
+        "technique": "T1021.002",
+        "event_type": "share_session_observed",
+        "synthetic": true
+      },
+      {
+        "timestamp": "2026-11-01T12:08:00Z",
+        "actor": "sim-operator",
+        "campaign": "SIM-MIRRORTRACE",
+        "host": "lab-srv-01",
+        "source": "fs-audit",
+        "technique": "T1005",
+        "event_type": "fixture_file_access_observed",
+        "synthetic": true
+      },
+      {
+        "timestamp": "2026-11-01T12:12:00Z",
+        "actor": "sim-operator",
+        "campaign": "SIM-MIRRORTRACE",
+        "host": "lab-srv-01",
+        "source": "proxy",
+        "technique": "T1041",
+        "event_type": "outbound_bytes_observed",
+        "synthetic": true
+      }
+    ]
+  },
+  {
+    "id": "incomplete-no-c2",
+    "expected_alert": false,
+    "description": "No web beacon stage.",
+    "events": [
+      {
+        "timestamp": "2026-11-01T12:00:00Z",
+        "actor": "sim-operator",
+        "campaign": "SIM-MIRRORTRACE",
+        "host": "lab-web-01",
+        "source": "web-gw",
+        "technique": "T1190",
+        "event_type": "web_access_anomaly",
+        "synthetic": true
+      },
+      {
+        "timestamp": "2026-11-01T12:02:00Z",
+        "actor": "sim-operator",
+        "campaign": "SIM-MIRRORTRACE",
+        "host": "lab-ws-01",
+        "source": "edr",
+        "technique": "T1082",
+        "event_type": "system_inventory_observed",
+        "synthetic": true
+      },
+      {
+        "timestamp": "2026-11-01T12:04:00Z",
+        "actor": "sim-operator",
+        "campaign": "SIM-MIRRORTRACE",
+        "host": "lab-ws-01",
+        "source": "edr",
+        "technique": "T1547.001",
+        "event_type": "autorun_configuration_observed",
+        "synthetic": true
+      },
+      {
+        "timestamp": "2026-11-01T12:06:00Z",
+        "actor": "sim-operator",
+        "campaign": "SIM-MIRRORTRACE",
+        "host": "lab-srv-01",
+        "source": "identity",
+        "technique": "T1021.002",
+        "event_type": "share_session_observed",
+        "synthetic": true
+      },
+      {
+        "timestamp": "2026-11-01T12:08:00Z",
+        "actor": "sim-operator",
+        "campaign": "SIM-MIRRORTRACE",
+        "host": "lab-srv-01",
+        "source": "fs-audit",
+        "technique": "T1005",
+        "event_type": "fixture_file_access_observed",
+        "synthetic": true
+      },
+      {
+        "timestamp": "2026-11-01T12:12:00Z",
+        "actor": "sim-operator",
+        "campaign": "SIM-MIRRORTRACE",
+        "host": "lab-srv-01",
+        "source": "proxy",
+        "technique": "T1041",
+        "event_type": "outbound_bytes_observed",
+        "synthetic": true
+      }
+    ]
+  },
+  {
+    "id": "cross-operator",
+    "expected_alert": false,
+    "description": "Different operators cannot form one chain.",
+    "events": [
+      {
+        "timestamp": "2026-11-01T12:00:00Z",
+        "actor": "sim-operator",
+        "campaign": "SIM-MIRRORTRACE",
+        "host": "lab-web-01",
+        "source": "web-gw",
+        "technique": "T1190",
+        "event_type": "web_access_anomaly",
+        "synthetic": true
+      },
+      {
+        "timestamp": "2026-11-01T12:02:00Z",
+        "actor": "sim-operator",
+        "campaign": "SIM-MIRRORTRACE",
+        "host": "lab-ws-01",
+        "source": "edr",
+        "technique": "T1082",
+        "event_type": "system_inventory_observed",
+        "synthetic": true
+      },
+      {
+        "timestamp": "2026-11-01T12:04:00Z",
+        "actor": "sim-operator",
+        "campaign": "SIM-MIRRORTRACE",
+        "host": "lab-ws-01",
+        "source": "edr",
+        "technique": "T1547.001",
+        "event_type": "autorun_configuration_observed",
+        "synthetic": true
+      },
+      {
+        "timestamp": "2026-11-01T12:06:00Z",
+        "actor": "sim-admin",
+        "campaign": "SIM-MIRRORTRACE",
+        "host": "lab-srv-01",
+        "source": "identity",
+        "technique": "T1021.002",
+        "event_type": "share_session_observed",
+        "synthetic": true
+      },
+      {
+        "timestamp": "2026-11-01T12:08:00Z",
+        "actor": "sim-admin",
+        "campaign": "SIM-MIRRORTRACE",
+        "host": "lab-srv-01",
+        "source": "fs-audit",
+        "technique": "T1005",
+        "event_type": "fixture_file_access_observed",
+        "synthetic": true
+      },
+      {
+        "timestamp": "2026-11-01T12:10:00Z",
+        "actor": "sim-admin",
+        "campaign": "SIM-MIRRORTRACE",
+        "host": "lab-srv-01",
+        "source": "proxy",
+        "technique": "T1071.001",
+        "event_type": "periodic_web_traffic_observed",
+        "synthetic": true
+      },
+      {
+        "timestamp": "2026-11-01T12:12:00Z",
+        "actor": "sim-admin",
+        "campaign": "SIM-MIRRORTRACE",
+        "host": "lab-srv-01",
+        "source": "proxy",
+        "technique": "T1041",
+        "event_type": "outbound_bytes_observed",
+        "synthetic": true
+      }
+    ]
+  },
+  {
+    "id": "cross-campaign",
+    "expected_alert": false,
+    "description": "Different campaigns cannot form one chain.",
+    "events": [
+      {
+        "timestamp": "2026-11-01T12:00:00Z",
+        "actor": "sim-operator",
+        "campaign": "SIM-MIRRORTRACE",
+        "host": "lab-web-01",
+        "source": "web-gw",
+        "technique": "T1190",
+        "event_type": "web_access_anomaly",
+        "synthetic": true
+      },
+      {
+        "timestamp": "2026-11-01T12:02:00Z",
+        "actor": "sim-operator",
+        "campaign": "SIM-MIRRORTRACE",
+        "host": "lab-ws-01",
+        "source": "edr",
+        "technique": "T1082",
+        "event_type": "system_inventory_observed",
+        "synthetic": true
+      },
+      {
+        "timestamp": "2026-11-01T12:04:00Z",
+        "actor": "sim-operator",
+        "campaign": "SIM-MIRRORTRACE",
+        "host": "lab-ws-01",
+        "source": "edr",
+        "technique": "T1547.001",
+        "event_type": "autorun_configuration_observed",
+        "synthetic": true
+      },
+      {
+        "timestamp": "2026-11-01T12:06:00Z",
+        "actor": "sim-operator",
+        "campaign": "SIM-OTHER",
+        "host": "lab-srv-01",
+        "source": "identity",
+        "technique": "T1021.002",
+        "event_type": "share_session_observed",
+        "synthetic": true
+      },
+      {
+        "timestamp": "2026-11-01T12:08:00Z",
+        "actor": "sim-operator",
+        "campaign": "SIM-OTHER",
+        "host": "lab-srv-01",
+        "source": "fs-audit",
+        "technique": "T1005",
+        "event_type": "fixture_file_access_observed",
+        "synthetic": true
+      },
+      {
+        "timestamp": "2026-11-01T12:10:00Z",
+        "actor": "sim-operator",
+        "campaign": "SIM-OTHER",
+        "host": "lab-srv-01",
+        "source": "proxy",
+        "technique": "T1071.001",
+        "event_type": "periodic_web_traffic_observed",
+        "synthetic": true
+      },
+      {
+        "timestamp": "2026-11-01T12:12:00Z",
+        "actor": "sim-operator",
+        "campaign": "SIM-OTHER",
+        "host": "lab-srv-01",
+        "source": "proxy",
+        "technique": "T1041",
+        "event_type": "outbound_bytes_observed",
+        "synthetic": true
+      }
+    ]
+  }
+]

@@ -84,6 +84,18 @@ jobs:
       - name: Sigma evaluator, offline rule checks and pySigma conformance
         run: python -m unittest discover -s detections/tests -t . -v
 
+      - name: Validate synthetic APT-like adversary emulation
+        run: |
+          python -m unittest discover -s apt_emulation/tests -t . -v
+          python -m apt_emulation.runner --output apt-emulation-report.json
+
+      - name: Publish synthetic adversary emulation evidence
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: synthetic-apt-emulation-report
+          path: apt-emulation-report.json
+          if-no-files-found: error
+
       - name: Replay labelled traffic against both fixtures and score the rules
         run: python -m detections.validate --output detection-report.json
 
