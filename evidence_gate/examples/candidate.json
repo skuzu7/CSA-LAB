@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "findings": [
+    {
+      "id": "LAB-EXAMPLE-001",
+      "status": "candidate",
+      "description": "Illustrative hypothesis in an owned local fixture; no vulnerability is asserted.",
+      "limitations": "No source tracing, runtime reproduction, impact or external review has been performed."
+    }
+  ]
+}
