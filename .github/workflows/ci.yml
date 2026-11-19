@@ -71,6 +71,11 @@ jobs:
           python -m governance.validate
           python -m unittest discover -s governance/tests -t . -v
 
+      - name: Verify local research evidence gates and anti-hallucination regressions
+        run: |
+          python -m unittest discover -s evidence_gate/tests -t . -v
+          python -m evidence_gate.verify evidence_gate/examples/candidate.json --root .
+
       - name: CVSS calculator and classification integrity
         run: |
           python -m unittest discover -s classification/tests -t . -v
